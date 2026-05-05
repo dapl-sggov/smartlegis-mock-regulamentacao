@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SmartLegis · Regulamentação</title>
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+  <!-- ============ Topbar ============ -->
+  <header class="sl-navbar">
+    <div class="sl-navbar__logo" id="logoToggle" title="Aplicações">
+      <div class="sl-navbar__logo-mark"></div>
+      <span class="sl-navbar__brand">SMARTLEGIS</span>
+    </div>
+    <nav class="sl-navbar__breadcrumb" id="breadcrumb">
+      <span>Está em: <a href="#/dashboard">Dashboard</a></span>
+    </nav>
+    <div class="sl-navbar__right">
+      <button class="sl-navbar__icon-btn" id="alertsBtn" title="Alertas">
+        🔔<span class="sl-navbar__badge" id="alertCount">0</span>
+      </button>
+      <button class="sl-navbar__icon-btn" title="Atividades">
+        📋<span class="sl-navbar__badge" style="background:var(--sl-primary)">3</span>
+      </button>
+      <button class="sl-navbar__icon-btn" title="Mensagens">
+        💬<span class="sl-navbar__badge">12</span>
+      </button>
+      <div class="sl-navbar__user">
+        <span class="sl-navbar__user-avatar">UD</span>
+        <span>Utilizador DAPL ▼</span>
+      </div>
+    </div>
+
+    <!-- Sidebar como dropdown popup (estilo SmartLegis real) -->
+    <aside class="sl-sidebar" id="sidebar">
+      <a class="sl-sidebar__item" href="#/dashboard" data-route="dashboard">
+        <span class="sl-sidebar__icon">📊</span> Dashboard
+      </a>
+      <a class="sl-sidebar__item" href="#/planos" data-route="planos">
+        <span class="sl-sidebar__icon">📋</span> Planos de Regulamentação
+      </a>
+      <a class="sl-sidebar__item" href="#/plano/novo" data-route="plano-novo">
+        <span class="sl-sidebar__icon">➕</span> Novo Plano
+      </a>
+      <a class="sl-sidebar__item" href="#/dsaag" data-route="dsaag">
+        <span class="sl-sidebar__icon">🛡️</span> Vista DSAAG
+      </a>
+      <a class="sl-sidebar__item" href="#/diplomas-publicados" data-route="diplomas-publicados">
+        <span class="sl-sidebar__icon">📜</span> Diplomas Publicados
+      </a>
+      <hr style="margin:6px 16px">
+      <div style="padding:6px 20px;font-size:10px;color:var(--sl-text-muted);text-transform:uppercase;letter-spacing:0.5px">SmartLegis (atalhos)</div>
+      <a class="sl-sidebar__item" href="#" style="opacity:0.6"><span class="sl-sidebar__icon">⚖️</span> Procedimentos</a>
+      <a class="sl-sidebar__item" href="#" style="opacity:0.6"><span class="sl-sidebar__icon">📁</span> Arquivo</a>
+      <a class="sl-sidebar__item" href="#" style="opacity:0.6"><span class="sl-sidebar__icon">📅</span> Agenda</a>
+      <a class="sl-sidebar__item" href="#" style="opacity:0.6"><span class="sl-sidebar__icon">📊</span> Estatísticas</a>
+      <a class="sl-sidebar__item" href="#" style="opacity:0.6"><span class="sl-sidebar__icon">🔍</span> Pesquisa geral</a>
+    </aside>
+  </header>
+
+  <main class="sl-main" id="main"></main>
+
+  <div id="toast" class="sl-toast"></div>
+  <div id="modalRoot"></div>
+
+  <script src="assets/data.js"></script>
+  <script src="assets/views.js"></script>
+  <script src="assets/app.js"></script>
+</body>
+</html>

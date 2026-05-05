@@ -1,0 +1,2764 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SmartLegis · Regulamentação</title>
+  <style>
+/* ==========================================================================
+   SmartLegis · Módulo de Regulamentação · Mock styles v0.4
+   Tokens extraídos pixel-a-pixel de qual.smartlegis.gov.pt (2026-04-29)
+   via Claude in Chrome. Paleta: laranja #F2784B + azul/roxo #3A529C +
+   turquesa #36D7B7 (wizard). Pill border-radius: 19.5px.
+   ========================================================================== */
+
+:root {
+  /* Cores primárias */
+  --sl-primary:        #F2784B;   /* Laranja: Criar, Editar, Avançar, Confirmar, Hoje */
+  --sl-primary-hover:  #E5663A;
+  --sl-secondary:      #3A529C;   /* Azul/roxo: header tabela, tab ativa, headers de secção */
+  --sl-secondary-dark: #2E4180;
+  --sl-success:        #36D7B7;   /* Turquesa: passo ativo do wizard, badge de mensagens */
+  --sl-upload-blue:    #5B5F9E;   /* Botões "Envie o seu ficheiro" */
+
+  /* Cinzas e neutros */
+  --sl-text:           #4C4C4C;
+  --sl-text-strong:    #000000;
+  --sl-text-muted:     #95A2A6;
+  --sl-text-soft:      #808080;
+  --sl-link:           #3A529C;
+
+  /* Backgrounds */
+  --sl-bg:             #F9F9F9;
+  --sl-bg-sheet:       #F7F7F7;
+  --sl-bg-card:        #FFFFFF;
+  --sl-bg-row-alt:     #F7F7F7;
+  --sl-bg-thead:       #EEEEEE;
+  --sl-bg-today:       #FBF8E5;
+
+  /* Estados informativos (para o mock) */
+  --sl-info:           #5B5F9E;
+  --sl-info-bg:        #E8E9F4;
+  --sl-warn:           #C97E00;
+  --sl-warn-bg:        #FBF1DC;
+  --sl-danger:         #C8102E;
+  --sl-danger-bg:      #FCE8EB;
+  --sl-success-bg:     #D5F5EC;
+
+  /* Borders */
+  --sl-border:         #DEE2E6;
+  --sl-border-light:   #E9ECEF;
+  --sl-border-modal:   rgba(0, 0, 0, 0.2);
+
+  /* Tipografia */
+  --sl-font: Noto, "Lucida Grande", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --sl-fs-xs:      10px;
+  --sl-fs-sm:      12px;
+  --sl-fs-base:    13px;
+  --sl-fs-md:      14px;
+  --sl-fs-lg:      15.6px;
+  --sl-fs-xl:      19.5px;
+  --sl-fs-xxl:     26px;
+  --sl-fs-display: 40px;
+  --sl-line:       19.5px;
+
+  /* Radii */
+  --sl-radius-pill: 19.5px;
+  --sl-radius-sm:   3px;
+  --sl-radius-md:   3.6px;
+
+  /* Espaços */
+  --sl-navbar-h:        55px;
+  --sl-control-panel-h: 42px;
+  --sl-row-h:           27px;
+  --sl-step-circle:     39px;
+  --sl-sidebar-w:       234px;
+
+  /* Sombras */
+  --sl-shadow-dropdown: 0 6px 12px -4px rgba(0, 0, 0, 0.25);
+  --sl-shadow-modal:    0 6px 12px -4px rgba(0, 0, 0, 0.25);
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0; padding: 0;
+  font-family: var(--sl-font);
+  font-size: var(--sl-fs-base);
+  line-height: var(--sl-line);
+  color: var(--sl-text);
+  background: var(--sl-bg);
+}
+
+a { color: var(--sl-link); text-decoration: none; }
+a:hover { text-decoration: underline; }
+button { font-family: inherit; cursor: pointer; }
+hr { border: 0; border-top: 1px solid var(--sl-border); margin: 8px 0; }
+
+/* ============ Topbar (navbar) ============ */
+.sl-navbar {
+  height: var(--sl-navbar-h);
+  background: var(--sl-bg-card);
+  display: flex;
+  align-items: center;
+  padding: 0;
+  position: sticky; top: 0; z-index: 50;
+  border-bottom: 1px solid var(--sl-border);
+}
+.sl-navbar__logo {
+  display: flex; align-items: center; gap: 10px;
+  padding: 0 16px;
+  cursor: pointer;
+  height: 100%;
+  border-right: 1px solid var(--sl-border);
+}
+.sl-navbar__logo:hover { background: var(--sl-bg-sheet); }
+.sl-navbar__logo-mark {
+  width: 24px; height: 24px;
+  background: linear-gradient(135deg,
+    var(--sl-primary) 0%, var(--sl-primary) 50%,
+    var(--sl-secondary) 50%, var(--sl-secondary) 100%);
+  clip-path: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%);
+  flex-shrink: 0;
+}
+.sl-navbar__brand {
+  color: var(--sl-text-soft);
+  font-size: var(--sl-fs-sm);
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+
+.sl-navbar__breadcrumb {
+  flex: 1;
+  padding: 0 16px;
+  color: var(--sl-text);
+  font-size: var(--sl-fs-xs);
+}
+.sl-navbar__breadcrumb a { color: var(--sl-link); text-decoration: underline; }
+.sl-navbar__breadcrumb-sep { margin: 0 6px; color: var(--sl-text-muted); }
+
+.sl-navbar__right {
+  display: flex; align-items: center; gap: 18px;
+  padding-right: 16px;
+}
+.sl-navbar__icon-btn {
+  position: relative;
+  background: none; border: 0;
+  font-size: 16px;
+  color: var(--sl-text-muted);
+  width: 30px; height: 30px;
+  display: inline-flex; align-items: center; justify-content: center;
+}
+.sl-navbar__icon-btn:hover { color: var(--sl-text); }
+.sl-navbar__badge {
+  position: absolute; top: -2px; right: -4px;
+  background: var(--sl-success);
+  color: #fff;
+  border-radius: 10px; padding: 1px 5px;
+  font-size: 10px; font-weight: 600;
+  min-width: 16px; text-align: center;
+}
+.sl-navbar__user {
+  display: flex; align-items: center; gap: 6px;
+  font-size: var(--sl-fs-base);
+  color: var(--sl-text);
+  cursor: pointer;
+}
+.sl-navbar__user-avatar {
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  background: var(--sl-primary);
+  color: #fff;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 600;
+}
+
+/* ============ Sidebar (apps dropdown popup) ============ */
+.sl-sidebar {
+  position: absolute;
+  top: var(--sl-navbar-h);
+  left: 0;
+  width: var(--sl-sidebar-w);
+  background: var(--sl-bg-sheet);
+  border: 1px solid var(--sl-border);
+  border-radius: var(--sl-radius-sm);
+  box-shadow: var(--sl-shadow-dropdown);
+  padding: 6px 0;
+  max-height: calc(100vh - 60px);
+  overflow-y: auto;
+  z-index: 40;
+  display: none;
+}
+.sl-sidebar.is-open { display: block; }
+.sl-sidebar__item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 6px 20px;
+  height: 57px;
+  color: var(--sl-text-muted);
+  font-size: var(--sl-fs-sm);
+  font-weight: 400;
+  text-decoration: none;
+  cursor: pointer;
+}
+.sl-sidebar__item:hover { background: rgba(0,0,0,0.04); text-decoration: none; }
+.sl-sidebar__item--active {
+  color: var(--sl-text-strong);
+  font-weight: 500;
+}
+.sl-sidebar__item--active .sl-sidebar__icon {
+  background: #2A2A2A;
+  color: #fff;
+}
+.sl-sidebar__icon {
+  width: 36px; height: 36px;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 22px;
+  border-radius: 4px;
+  color: var(--sl-text-muted);
+  flex-shrink: 0;
+}
+
+/* ============ Layout body ============ */
+.sl-main {
+  min-height: calc(100vh - var(--sl-navbar-h));
+}
+
+/* ============ Control Panel ============ */
+.sl-cp {
+  height: var(--sl-control-panel-h);
+  background: var(--sl-bg-sheet);
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-bottom: 1px solid var(--sl-border);
+}
+.sl-cp__breadcrumb {
+  color: var(--sl-text);
+  font-size: var(--sl-fs-xs);
+}
+.sl-cp__breadcrumb a { color: var(--sl-link); text-decoration: underline; }
+.sl-cp__breadcrumb-sep { margin: 0 6px; color: var(--sl-text-muted); }
+.sl-cp__buttons { display: flex; align-items: center; gap: 8px; }
+.sl-cp__right {
+  margin-left: auto;
+  display: flex; align-items: center; gap: 10px;
+}
+.sl-pager {
+  display: flex; align-items: center; gap: 6px;
+  font-size: var(--sl-fs-base);
+}
+.sl-pager__nav {
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  background: var(--sl-bg-card);
+  border: 1px solid var(--sl-border);
+  display: inline-flex; align-items: center; justify-content: center;
+  color: var(--sl-text);
+  cursor: pointer;
+}
+.sl-pager__nav:hover { background: var(--sl-bg-sheet); }
+
+/* ============ Botões ============ */
+.sl-btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  gap: 6px;
+  font-family: var(--sl-font);
+  font-size: var(--sl-fs-base);
+  font-weight: 400;
+  padding: 6.5px 19.5px;
+  border-radius: var(--sl-radius-pill);
+  border: 1px solid transparent;
+  background: var(--sl-bg-card);
+  color: var(--sl-text-strong);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background 0.12s ease;
+  line-height: 1.2;
+}
+.sl-btn:hover { text-decoration: none; }
+.sl-btn--primary {
+  background: var(--sl-primary);
+  color: #fff;
+}
+.sl-btn--primary:hover { background: var(--sl-primary-hover); color: #fff; }
+.sl-btn--secondary {
+  background: var(--sl-bg-card);
+  color: #212529;
+  border-color: var(--sl-border);
+}
+.sl-btn--secondary:hover { background: #F1F3F5; }
+.sl-btn--upload {
+  background: var(--sl-upload-blue);
+  color: #fff;
+}
+.sl-btn--link {
+  background: transparent;
+  color: var(--sl-link);
+  text-decoration: underline;
+  border: 0;
+  padding: 6.5px 4px;
+}
+.sl-btn--icon {
+  padding: 0;
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  border: 1px solid var(--sl-border);
+}
+.sl-btn--small {
+  border-radius: var(--sl-radius-sm);
+  padding: 4.5px 9px;
+}
+.sl-btn--danger {
+  background: var(--sl-danger);
+  color: #fff;
+}
+.sl-btn:disabled, .sl-btn[disabled] { opacity: 0.5; cursor: not-allowed; }
+
+/* ============ Form view ============ */
+.sl-form-bg {
+  background: var(--sl-bg-sheet);
+  padding: 24px 16px;
+  min-height: calc(100vh - var(--sl-navbar-h) - var(--sl-control-panel-h));
+}
+.sl-form-sheet {
+  background: var(--sl-bg-card);
+  max-width: 1140px;
+  margin: 0 auto;
+  padding: 24px 32px;
+  border-radius: var(--sl-radius-sm);
+  border: 1px solid var(--sl-border);
+}
+.sl-form__title {
+  font-size: var(--sl-fs-xxl);
+  font-weight: 700;
+  color: var(--sl-text);
+  text-align: center;
+  margin: 0 0 6px;
+}
+.sl-form__subtitle {
+  text-align: center;
+  font-size: var(--sl-fs-base);
+  color: var(--sl-text-muted);
+  margin: 0 0 16px;
+}
+
+.sl-form__row {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px 24px;
+  margin-bottom: 12px;
+}
+.sl-form__row--4 { grid-template-columns: repeat(4, 1fr); }
+.sl-form__row--3 { grid-template-columns: repeat(3, 1fr); }
+.sl-form__field { display: flex; flex-direction: column; }
+.sl-form__field--full { grid-column: 1 / -1; }
+.sl-form__label {
+  font-size: var(--sl-fs-base);
+  font-weight: 700;
+  color: var(--sl-text);
+  margin-bottom: 4px;
+}
+.sl-form__label--required::after {
+  content: " *";
+  color: var(--sl-danger);
+}
+.sl-form__value {
+  font-size: var(--sl-fs-base);
+  color: var(--sl-text);
+  border-bottom: 1px solid var(--sl-border);
+  padding: 4px 0;
+  min-height: 24px;
+}
+.sl-form__input {
+  border: 0;
+  border-bottom: 1px solid var(--sl-border);
+  background: transparent;
+  outline: 0;
+  font-family: inherit;
+  font-size: var(--sl-fs-base);
+  padding: 4px 0;
+  width: 100%;
+}
+.sl-form__input:focus { border-bottom-color: var(--sl-secondary); }
+.sl-form__textarea {
+  border: 1px solid var(--sl-border);
+  border-radius: var(--sl-radius-sm);
+  padding: 6px 8px;
+  font-family: inherit;
+  font-size: var(--sl-fs-base);
+  background: var(--sl-bg-card);
+  resize: vertical;
+  min-height: 60px;
+  width: 100%;
+}
+.sl-form__select {
+  border: 1px solid var(--sl-border);
+  border-radius: var(--sl-radius-sm);
+  padding: 4px 8px;
+  font-family: inherit;
+  font-size: var(--sl-fs-base);
+  background: var(--sl-bg-card);
+  width: 100%;
+}
+
+/* ============ Notebook (tabs) — estilo SmartLegis real ============ */
+.sl-notebook { margin: 16px 0 0; }
+.sl-notebook__tabs {
+  display: flex;
+  gap: 2px;
+  border-bottom: 1px solid var(--sl-secondary);
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.sl-notebook__tab {
+  padding: 6px 14px;
+  font-size: var(--sl-fs-base);
+  font-weight: 400;
+  color: var(--sl-secondary);
+  background: transparent;
+  border: 0;
+  border-radius: var(--sl-radius-sm) var(--sl-radius-sm) 0 0;
+  cursor: pointer;
+}
+.sl-notebook__tab:hover { background: rgba(58,82,156,0.08); }
+.sl-notebook__tab--active {
+  background: var(--sl-secondary);
+  color: #fff;
+  font-weight: 500;
+}
+.sl-notebook__tab--active:hover { background: var(--sl-secondary-dark); }
+.sl-notebook__page { padding: 16px 0; }
+
+/* ============ Secções colapsáveis (em vez de chatter) ============ */
+.sl-section { margin-top: 16px; }
+.sl-section__header {
+  background: var(--sl-secondary);
+  color: #fff;
+  font-size: var(--sl-fs-base);
+  font-weight: 600;
+  letter-spacing: 0.6px;
+  padding: 10px 16px;
+  border-radius: var(--sl-radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  text-transform: uppercase;
+  user-select: none;
+}
+.sl-section__header:hover { background: var(--sl-secondary-dark); }
+.sl-section__chevron { font-size: 14px; transition: transform 0.2s; }
+.sl-section--open .sl-section__header {
+  border-radius: var(--sl-radius-sm) var(--sl-radius-sm) 0 0;
+}
+.sl-section--open .sl-section__chevron { transform: rotate(180deg); }
+.sl-section__body {
+  background: var(--sl-bg-card);
+  padding: 14px 16px;
+  border: 1px solid var(--sl-border);
+  border-top: 0;
+  border-radius: 0 0 var(--sl-radius-sm) var(--sl-radius-sm);
+  display: none;
+}
+.sl-section--open .sl-section__body { display: block; }
+
+/* ============ Tabela (list view) ============ */
+.sl-table-wrap {
+  background: var(--sl-bg-card);
+  border: 1px solid var(--sl-border);
+  border-radius: var(--sl-radius-sm);
+  overflow: auto;
+}
+.sl-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--sl-fs-base);
+}
+.sl-table thead th {
+  background: var(--sl-secondary);
+  color: #fff;
+  font-size: var(--sl-fs-md);
+  font-weight: 700;
+  text-align: left;
+  padding: 5px 8px;
+  white-space: nowrap;
+  position: sticky; top: 0;
+}
+.sl-table tbody td {
+  padding: 5px 8px;
+  font-size: var(--sl-fs-base);
+  color: var(--sl-text-strong);
+  vertical-align: middle;
+  border-bottom: 1px solid var(--sl-border-light);
+}
+.sl-table tbody tr { background: var(--sl-bg-card); }
+.sl-table tbody tr:nth-child(even) { background: var(--sl-bg-row-alt); }
+.sl-table tbody tr:hover { background: #EEF1FB; cursor: pointer; }
+
+/* Tabela inline em form (.sl-table--inline para tabelas dentro de notebook pages) */
+.sl-table--inline thead th {
+  background: var(--sl-bg-thead);
+  color: var(--sl-text);
+  font-size: var(--sl-fs-sm);
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+/* ============ Search/Filter pills ============ */
+.sl-searchbox {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--sl-bg-card);
+  border: 1px solid var(--sl-border);
+  border-radius: var(--sl-radius-pill);
+  padding: 4px 14px;
+  font-size: var(--sl-fs-base);
+}
+.sl-searchbox input {
+  flex: 1;
+  border: 0; outline: 0; background: transparent;
+  font-size: var(--sl-fs-base);
+}
+.sl-filter-pill {
+  background: var(--sl-bg-card);
+  border-radius: var(--sl-radius-pill);
+  padding: 4px 14px;
+  display: inline-flex; align-items: center; gap: 8px;
+  border: 1px solid var(--sl-border);
+  font-size: var(--sl-fs-base);
+  cursor: pointer;
+  color: var(--sl-text);
+}
+.sl-filter-pill:hover { background: var(--sl-bg-sheet); }
+.sl-filter-pill__caret { font-size: 10px; color: var(--sl-text-muted); }
+
+/* ============ Dropdown menu (Ação ▼) ============ */
+.sl-dropdown {
+  position: absolute;
+  background: var(--sl-bg-sheet);
+  border: 1px solid var(--sl-border);
+  border-radius: var(--sl-radius-sm);
+  box-shadow: var(--sl-shadow-dropdown);
+  min-width: 220px;
+  padding: 6px 0;
+  z-index: 60;
+  display: none;
+}
+.sl-dropdown.is-open { display: block; }
+.sl-dropdown__item {
+  display: block;
+  padding: 4px 20px;
+  color: var(--sl-text);
+  font-size: var(--sl-fs-sm);
+  line-height: 18px;
+  text-decoration: none;
+  cursor: pointer;
+}
+.sl-dropdown__item:hover {
+  background: rgba(58,82,156,0.08);
+  color: var(--sl-secondary);
+  text-decoration: none;
+}
+
+/* ============ Modal ============ */
+.sl-modal-backdrop {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 999;
+  display: none;
+}
+.sl-modal-backdrop.is-open { display: block; }
+.sl-modal {
+  position: fixed;
+  top: 50px;
+  left: 50%;
+  transform: translateX(-50%);
+  max-width: 650px;
+  width: calc(100% - 32px);
+  z-index: 1000;
+}
+.sl-modal__content {
+  background: var(--sl-bg-card);
+  border: 1px solid var(--sl-border-modal);
+  border-radius: var(--sl-radius-md);
+  box-shadow: var(--sl-shadow-modal);
+}
+.sl-modal__header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--sl-border-light);
+}
+.sl-modal__title {
+  font-size: var(--sl-fs-lg);
+  font-weight: 700;
+  color: var(--sl-text);
+}
+.sl-modal__title-suffix {
+  color: var(--sl-text-muted);
+  font-weight: 400;
+  margin-left: 6px;
+}
+.sl-modal__close {
+  border: 0; background: transparent;
+  font-size: 18px;
+  color: var(--sl-text-muted);
+  cursor: pointer;
+}
+.sl-modal__body {
+  padding: 16px;
+  color: var(--sl-text);
+  font-size: var(--sl-fs-base);
+}
+.sl-modal__footer {
+  padding: 0 16px 16px;
+  display: flex; gap: 10px;
+  justify-content: flex-end;
+}
+
+/* ============ Wizard (3 passos) ============ */
+.sl-wizard {
+  background: var(--sl-bg-card);
+  max-width: 1140px;
+  margin: 16px auto;
+  padding: 24px 36px 8px;
+  border-radius: var(--sl-radius-sm);
+  border: 1px solid var(--sl-border);
+}
+.sl-wizard__stepper {
+  display: flex; align-items: center; justify-content: center;
+  gap: 0;
+  padding: 8px 0 24px;
+}
+.sl-wizard__step {
+  display: flex; flex-direction: column; align-items: center;
+  flex: 0 0 auto;
+}
+.sl-wizard__circle {
+  width: var(--sl-step-circle);
+  height: var(--sl-step-circle);
+  border-radius: var(--sl-radius-pill);
+  background: var(--sl-bg-card);
+  color: var(--sl-text-muted);
+  font-size: var(--sl-fs-base);
+  font-weight: 500;
+  display: inline-flex; align-items: center; justify-content: center;
+  border: 1px solid var(--sl-border);
+}
+.sl-wizard__label {
+  margin-top: 8px;
+  font-size: 11px;
+  color: var(--sl-text-muted);
+  text-transform: uppercase;
+  text-align: center;
+  letter-spacing: 0.4px;
+  max-width: 220px;
+  line-height: 1.3;
+}
+.sl-wizard__connector {
+  height: 1px;
+  background: var(--sl-border);
+  width: 80px;
+  margin: -28px 12px 0;
+}
+.sl-wizard__step--active .sl-wizard__circle,
+.sl-wizard__step--done .sl-wizard__circle {
+  background: var(--sl-success);
+  color: #fff;
+  border-color: var(--sl-success);
+}
+.sl-wizard__step--active .sl-wizard__label { color: var(--sl-text); font-weight: 500; }
+.sl-wizard__intro {
+  text-align: center;
+  font-size: var(--sl-fs-base);
+  color: var(--sl-text);
+  margin: 0 0 18px;
+}
+.sl-wizard__footer {
+  display: flex; align-items: center;
+  margin-top: 24px; padding-top: 16px;
+  border-top: 1px solid var(--sl-border-light);
+}
+.sl-wizard__footer-spacer { flex: 1; }
+.sl-wizard__footer .sl-btn--link { margin-right: 12px; }
+
+/* Radio inline (Não/Sim, Preencher/Carregar) */
+.sl-radio-group { display: inline-flex; gap: 18px; align-items: center; }
+.sl-radio { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; font-size: var(--sl-fs-base); }
+.sl-radio input[type="radio"] {
+  appearance: none;
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  border: 1px solid var(--sl-secondary);
+  position: relative;
+  cursor: pointer;
+}
+.sl-radio input[type="radio"]:checked {
+  background: var(--sl-secondary);
+  box-shadow: inset 0 0 0 2px #fff;
+}
+
+/* ============ Cards (dashboard) ============ */
+.sl-card {
+  background: var(--sl-bg-card);
+  border: 1px solid var(--sl-border);
+  border-radius: 14px;
+  padding: 24px 16px;
+  text-align: center;
+  display: flex; flex-direction: column; align-items: center;
+  gap: 8px;
+}
+.sl-card__number {
+  font-size: var(--sl-fs-display);
+  font-weight: 400;
+  color: var(--sl-text);
+  line-height: 1;
+}
+.sl-card__title {
+  font-size: var(--sl-fs-xl);
+  font-weight: 700;
+  color: var(--sl-text-strong);
+  text-transform: uppercase;
+  margin: 4px 0;
+}
+.sl-card hr { width: 80%; }
+
+.sl-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  padding: 24px;
+}
+
+/* ============ Banners ============ */
+.sl-banner {
+  padding: 12px 16px;
+  border-radius: var(--sl-radius-sm);
+  margin-bottom: 16px;
+  display: flex; gap: 12px; align-items: flex-start;
+  font-size: var(--sl-fs-base);
+  border-left: 4px solid var(--sl-info);
+  background: var(--sl-info-bg);
+  color: var(--sl-text);
+}
+.sl-banner--warn { border-color: var(--sl-warn); background: var(--sl-warn-bg); }
+.sl-banner--danger { border-color: var(--sl-danger); background: var(--sl-danger-bg); }
+.sl-banner--success { border-color: var(--sl-success); background: var(--sl-success-bg); }
+.sl-banner strong { display: block; margin-bottom: 2px; }
+
+/* ============ Pills/Badges (estados) ============ */
+.sl-pill {
+  display: inline-block;
+  padding: 2px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: var(--sl-radius-pill);
+  background: var(--sl-bg-thead);
+  color: var(--sl-text);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+}
+.sl-pill--blue   { background: rgba(58,82,156,0.15); color: var(--sl-secondary); }
+.sl-pill--orange { background: rgba(242,120,75,0.15); color: var(--sl-primary); }
+.sl-pill--green  { background: rgba(54,215,183,0.20); color: #128A6F; }
+.sl-pill--red    { background: var(--sl-danger-bg); color: var(--sl-danger); }
+.sl-pill--warn   { background: var(--sl-warn-bg); color: var(--sl-warn); }
+.sl-pill--grey   { background: var(--sl-bg-thead); color: var(--sl-text-muted); }
+
+/* Risco dot */
+.sl-risk { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; }
+.sl-risk--low  { background: var(--sl-success); }
+.sl-risk--mid  { background: var(--sl-warn); }
+.sl-risk--high { background: var(--sl-danger); }
+
+/* ============ Toast ============ */
+.sl-toast {
+  position: fixed; bottom: 24px; left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  background: var(--sl-text-strong);
+  color: #fff;
+  padding: 10px 18px;
+  border-radius: var(--sl-radius-pill);
+  font-size: var(--sl-fs-base);
+  box-shadow: var(--sl-shadow-modal);
+  opacity: 0;
+  transition: all 0.3s ease;
+  z-index: 1500;
+  pointer-events: none;
+}
+.sl-toast.is-open {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
+.sl-toast--success { background: #128A6F; }
+.sl-toast--error { background: var(--sl-danger); }
+
+/* ============ Empty state ============ */
+.sl-empty {
+  text-align: center; padding: 48px 24px;
+  color: var(--sl-text-muted);
+}
+.sl-empty__icon { font-size: 36px; margin-bottom: 12px; opacity: 0.5; }
+.sl-empty__text strong { display: block; font-size: 16px; color: var(--sl-text); margin-bottom: 4px; }
+
+/* ============ Timeline (histórico, atividade) ============ */
+.sl-timeline { position: relative; padding-left: 20px; }
+.sl-timeline::before {
+  content: ''; position: absolute; left: 6px; top: 4px; bottom: 0;
+  width: 2px; background: var(--sl-border);
+}
+.sl-timeline__item { position: relative; padding: 6px 0 8px; }
+.sl-timeline__item::before {
+  content: ''; position: absolute; left: -18px; top: 10px;
+  width: 10px; height: 10px; border-radius: 50%;
+  background: var(--sl-text-muted);
+  border: 2px solid var(--sl-bg-card);
+  box-shadow: 0 0 0 1px var(--sl-border);
+}
+.sl-timeline__item--active::before { background: var(--sl-primary); }
+.sl-timeline__item--done::before { background: var(--sl-success); }
+.sl-timeline__title { font-size: var(--sl-fs-base); font-weight: 500; margin: 0; }
+.sl-timeline__meta { font-size: 11px; color: var(--sl-text-muted); }
+.sl-timeline__body { font-size: var(--sl-fs-sm); color: var(--sl-text); margin-top: 2px; }
+
+/* ============ Alert row (DSAAG) ============ */
+.sl-alert-row {
+  display: grid; grid-template-columns: auto 1fr auto auto;
+  gap: 12px; align-items: center;
+  padding: 8px 12px; border: 1px solid var(--sl-border);
+  border-radius: var(--sl-radius-sm);
+  background: var(--sl-bg-card); margin-bottom: 6px;
+}
+.sl-alert-row--critical { border-left: 4px solid var(--sl-danger); }
+.sl-alert-row--warning { border-left: 4px solid var(--sl-warn); }
+.sl-alert-row--info { border-left: 4px solid var(--sl-info); }
+.sl-alert-row__title { font-weight: 600; font-size: var(--sl-fs-base); }
+.sl-alert-row__desc { color: var(--sl-text-muted); font-size: var(--sl-fs-sm); margin-top: 2px; }
+.sl-alert-row__actions { display: flex; gap: 4px; }
+
+/* ============ Chips de aprovação (multi-proponente) ============ */
+.sl-approval-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--sl-border-light);
+}
+.sl-approval-row__name { flex: 1; font-weight: 500; }
+.sl-approval-row__lead-badge {
+  display: inline-block;
+  padding: 1px 6px;
+  background: var(--sl-secondary);
+  color: #fff;
+  font-size: 10px;
+  border-radius: var(--sl-radius-sm);
+  font-weight: 600;
+}
+
+/* ============ Comments / chat-like (para circulação interna) ============ */
+.sl-comment {
+  border-left: 3px solid var(--sl-border);
+  padding: 8px 12px;
+  margin: 6px 0;
+  background: var(--sl-bg-sheet);
+  border-radius: 0 var(--sl-radius-sm) var(--sl-radius-sm) 0;
+}
+.sl-comment--fav { border-color: var(--sl-success); background: var(--sl-success-bg); }
+.sl-comment--reservas { border-color: var(--sl-warn); background: var(--sl-warn-bg); }
+.sl-comment--des { border-color: var(--sl-danger); background: var(--sl-danger-bg); }
+.sl-comment__meta { font-size: 11px; color: var(--sl-text-muted); margin-bottom: 4px; }
+
+/* ============ Calendar (mini) ============ */
+.sl-mini-cal { font-size: var(--sl-fs-sm); border-collapse: collapse; }
+.sl-mini-cal th, .sl-mini-cal td {
+  padding: 3px 6px; text-align: center;
+  color: var(--sl-text);
+}
+.sl-mini-cal__today {
+  background: var(--sl-secondary);
+  color: #fff;
+  border-radius: var(--sl-radius-sm);
+}
+
+/* ============ Misc utilities ============ */
+.sl-flex { display: flex; gap: 8px; align-items: center; }
+.sl-flex-between { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.sl-text-muted { color: var(--sl-text-muted); }
+.sl-mt-8 { margin-top: 8px; }
+.sl-mt-16 { margin-top: 16px; }
+.sl-mt-24 { margin-top: 24px; }
+.sl-mb-8 { margin-bottom: 8px; }
+.sl-mb-16 { margin-bottom: 16px; }
+.sl-divider { height: 1px; background: var(--sl-border); margin: 12px 0; }
+.sl-grid-2 { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; }
+
+/* H2 secção genérico */
+.sl-h2 {
+  font-size: var(--sl-fs-xl);
+  font-weight: 700;
+  color: var(--sl-text);
+  margin: 16px 0 8px;
+}
+
+/* Progress bar */
+.sl-progress {
+  height: 8px;
+  background: var(--sl-bg-thead);
+  border-radius: var(--sl-radius-sm);
+  overflow: hidden;
+}
+.sl-progress__bar {
+  height: 100%;
+  background: var(--sl-success);
+  transition: width 0.3s ease;
+}
+
+@media (max-width: 900px) {
+  .sl-grid-2 { grid-template-columns: 1fr; }
+  .sl-form__row, .sl-form__row--3, .sl-form__row--4 { grid-template-columns: 1fr; }
+  .sl-cp { flex-wrap: wrap; height: auto; padding: 8px 16px; }
+}
+
+</style>
+</head>
+<body>
+  <!-- ============ Topbar ============ -->
+  <header class="sl-navbar">
+    <div class="sl-navbar__logo" id="logoToggle" title="Aplicações">
+      <div class="sl-navbar__logo-mark"></div>
+      <span class="sl-navbar__brand">SMARTLEGIS</span>
+    </div>
+    <nav class="sl-navbar__breadcrumb" id="breadcrumb">
+      <span>Está em: <a href="#/dashboard">Dashboard</a></span>
+    </nav>
+    <div class="sl-navbar__right">
+      <button class="sl-navbar__icon-btn" id="alertsBtn" title="Alertas">
+        🔔<span class="sl-navbar__badge" id="alertCount">0</span>
+      </button>
+      <button class="sl-navbar__icon-btn" title="Atividades">
+        📋<span class="sl-navbar__badge" style="background:var(--sl-primary)">3</span>
+      </button>
+      <button class="sl-navbar__icon-btn" title="Mensagens">
+        💬<span class="sl-navbar__badge">12</span>
+      </button>
+      <div class="sl-navbar__user">
+        <span class="sl-navbar__user-avatar">UD</span>
+        <span>Utilizador DAPL ▼</span>
+      </div>
+    </div>
+
+    <!-- Sidebar como dropdown popup (estilo SmartLegis real) -->
+    <aside class="sl-sidebar" id="sidebar">
+      <a class="sl-sidebar__item" href="#/dashboard" data-route="dashboard">
+        <span class="sl-sidebar__icon">📊</span> Dashboard
+      </a>
+      <a class="sl-sidebar__item" href="#/planos" data-route="planos">
+        <span class="sl-sidebar__icon">📋</span> Planos de Regulamentação
+      </a>
+      <a class="sl-sidebar__item" href="#/plano/novo" data-route="plano-novo">
+        <span class="sl-sidebar__icon">➕</span> Novo Plano
+      </a>
+      <a class="sl-sidebar__item" href="#/dsaag" data-route="dsaag">
+        <span class="sl-sidebar__icon">🛡️</span> Vista DSAAG
+      </a>
+      <a class="sl-sidebar__item" href="#/diplomas-publicados" data-route="diplomas-publicados">
+        <span class="sl-sidebar__icon">📜</span> Diplomas Publicados
+      </a>
+      <hr style="margin:6px 16px">
+      <div style="padding:6px 20px;font-size:10px;color:var(--sl-text-muted);text-transform:uppercase;letter-spacing:0.5px">SmartLegis (atalhos)</div>
+      <a class="sl-sidebar__item" href="#" style="opacity:0.6"><span class="sl-sidebar__icon">⚖️</span> Procedimentos</a>
+      <a class="sl-sidebar__item" href="#" style="opacity:0.6"><span class="sl-sidebar__icon">📁</span> Arquivo</a>
+      <a class="sl-sidebar__item" href="#" style="opacity:0.6"><span class="sl-sidebar__icon">📅</span> Agenda</a>
+      <a class="sl-sidebar__item" href="#" style="opacity:0.6"><span class="sl-sidebar__icon">📊</span> Estatísticas</a>
+      <a class="sl-sidebar__item" href="#" style="opacity:0.6"><span class="sl-sidebar__icon">🔍</span> Pesquisa geral</a>
+    </aside>
+  </header>
+
+  <main class="sl-main" id="main"></main>
+
+  <div id="toast" class="sl-toast"></div>
+  <div id="modalRoot"></div>
+
+  <script>
+
+// === data.js ===
+// SmartLegis · Módulo de Regulamentação · Mock data v0.2
+// Alterações vs v0.1:
+// - Novo workflow simplificado (proposto → em_redacao → em_aprovacao → aprovado → publicado)
+// - Campos de Análise IA
+// - Aprovações multi-proponente
+// - Convites de edição em track changes
+// - Documento na plataforma com versões incrementais
+
+const DSAAG_LABEL = 'DSAAG';
+
+const AREAS_GOVERNATIVAS = [
+  { id: 'mai', nome: 'Ministério da Administração Interna', sigla: 'MAI' },
+  { id: 'maac', nome: 'Ministério do Ambiente e Ação Climática', sigla: 'MAAC' },
+  { id: 'mj', nome: 'Ministério da Justiça', sigla: 'MJ' },
+  { id: 'mne', nome: 'Ministério dos Negócios Estrangeiros', sigla: 'MNE' },
+  { id: 'mf', nome: 'Ministério das Finanças', sigla: 'MF' },
+  { id: 'metd', nome: 'Min. Estado/Economia/Transição Digital', sigla: 'METD' },
+  { id: 'mp', nome: 'Ministério da Presidência', sigla: 'MP' },
+  { id: 'me', nome: 'Ministério da Educação', sigla: 'ME' },
+  { id: 'mctes', nome: 'Min. Ciência, Tecnologia e Ensino Superior', sigla: 'MCTES' },
+  { id: 'mc', nome: 'Ministério da Cultura', sigla: 'MC' },
+  { id: 'msau', nome: 'Ministério da Saúde', sigla: 'MS' },
+  { id: 'mtsss', nome: 'Min. Trabalho e Solidariedade', sigla: 'MTSSS' },
+  { id: 'magri', nome: 'Ministério da Agricultura', sigla: 'MAGRI' },
+  { id: 'mih', nome: 'Min. Infraestruturas e Habitação', sigla: 'MIH' },
+];
+
+const ENTIDADES_EXTERNAS = [
+  { id: 'ces', nome: 'Conselho Económico e Social', tipo: 'obrigatoria' },
+  { id: 'anmp', nome: 'ANMP - Municípios Portugueses', tipo: 'obrigatoria' },
+  { id: 'anafre', nome: 'ANAFRE - Freguesias', tipo: 'obrigatoria' },
+  { id: 'cnpd', nome: 'CNPD - Proteção de Dados', tipo: 'obrigatoria' },
+  { id: 'erc', nome: 'ERC - Comunicação Social', tipo: 'obrigatoria' },
+  { id: 'ordem-advogados', nome: 'Ordem dos Advogados', tipo: 'facultativa' },
+  { id: 'ordem-medicos', nome: 'Ordem dos Médicos', tipo: 'facultativa' },
+  { id: 'ordem-engenheiros', nome: 'Ordem dos Engenheiros', tipo: 'facultativa' },
+  { id: 'tcontas', nome: 'Tribunal de Contas', tipo: 'facultativa' },
+  { id: 'cejure', nome: 'CEJURE', tipo: 'facultativa' },
+  { id: 'utail', nome: 'UTAIL (PlanAPP)', tipo: 'facultativa' },
+];
+
+const DIPLOMAS = [
+  {
+    id: 'DL00012/XXIV/2026', tipo: 'Decreto-Lei',
+    sumario: 'Estabelece o regime jurídico da economia circular',
+    proponente: 'maac', estado: 'Publicado',
+    data_publicacao: '2026-03-15', dr: 'DR Nº 52, Série I',
+    em_smartlegis: true, tem_plano_regulamentacao: false,
+    normas_habilitantes: [
+      { ref: 'Artigo 14.º, n.º 2', desc: 'Critérios de certificação' },
+      { ref: 'Artigo 22.º, n.º 1', desc: 'Regime de taxas' },
+    ],
+    prazo_legal_dias: 90,
+  },
+  {
+    id: 'DL00018/XXIV/2026', tipo: 'Decreto-Lei',
+    sumario: 'Aprova o regime jurídico da identificação eletrónica',
+    proponente: 'metd', estado: 'Publicado',
+    data_publicacao: '2026-03-28', dr: 'DR Nº 62, Série I',
+    em_smartlegis: true, tem_plano_regulamentacao: true,
+    normas_habilitantes: [
+      { ref: 'Artigo 8.º', desc: 'Requisitos técnicos dos meios de identificação' },
+    ],
+    prazo_legal_dias: 60,
+  },
+  {
+    id: 'L00005-A/2026', tipo: 'Lei (AR)',
+    sumario: 'Pegada legislativa a nível governamental',
+    proponente: 'mp', estado: 'Publicado',
+    data_publicacao: '2026-04-08', dr: 'DR Nº 70, Série I',
+    em_smartlegis: false, tem_plano_regulamentacao: false,
+    normas_habilitantes: [
+      { ref: 'Artigo 5.º, n.º 1', desc: 'Procedimento de registo' },
+      { ref: 'Artigo 11.º', desc: 'Requisitos do sistema de informação' },
+    ],
+    prazo_legal_dias: 120,
+  },
+  {
+    id: 'DL00025/XXIV/2026', tipo: 'Decreto-Lei',
+    sumario: 'Trabalho remoto na Administração Pública',
+    proponente: 'mp', estado: 'Em estudo',
+    data_publicacao: null, dr: null,
+    em_smartlegis: true, tem_plano_regulamentacao: false,
+    normas_habilitantes: [
+      { ref: 'Artigo 9.º', desc: 'Limites máximos de trabalho remoto' },
+      { ref: 'Artigo 16.º', desc: 'Subsídio de teletrabalho' },
+    ],
+    prazo_legal_dias: 120,
+  },
+];
+
+// Estados v0.2 (simplificados)
+const ESTADOS_PLANO = {
+  proposto:        { label: 'Proposto',         pill: 'pill-blue',  ordem: 1 },
+  em_redacao:      { label: 'Em Redação',       pill: 'pill-blue',  ordem: 2 },
+  em_aprovacao:    { label: 'Em Aprovação',     pill: 'pill-amber', ordem: 3 },
+  aprovado:        { label: 'Aprovado',         pill: 'pill-green', ordem: 4 },
+  publicado:       { label: 'Publicado',        pill: 'pill-green', ordem: 5 },
+  dispensado:      { label: 'Dispensado',       pill: 'pill-grey',  ordem: 99 },
+  cancelado:       { label: 'Cancelado',        pill: 'pill-red',   ordem: 99 },
+};
+
+const ESTADOS_SEQUENCIA = ['proposto', 'em_redacao', 'em_aprovacao', 'aprovado', 'publicado'];
+
+const FORMAS_ATO = [
+  ['decreto_lei', 'Decreto-Lei'],
+  ['decreto', 'Decreto'],
+  ['decreto_regulamentar', 'Decreto Regulamentar'],
+  ['portaria', 'Portaria'],
+  ['rcm', 'Resolução do Conselho de Ministros'],
+];
+
+const PLANOS = [
+  {
+    id: 'REG-00001/XXIV/2026',
+    titulo: 'Regulamentação do regime de identificação eletrónica',
+    tipo_origem: 'proponente_via_diploma',
+    diploma_habilitante: 'DL00018/XXIV/2026',
+    state: 'em_aprovacao',
+    // IA
+    ai_status: 'validada',
+    ai_provider: 'mock',
+    ai_executed_at: '2026-04-01 14:23',
+    ai_validated_by: 'Rita Silva (METD)',
+    ai_validated_at: '2026-04-01 16:08',
+    ai_confianca: 0.82,
+    ai_summary: 'Análise mock detetou forma "Portaria" baseada em padrões textuais; prazo de 60 dias extraído do texto; 1 norma habilitante (Artigo 8.º). Sugeridas CNPD e CEJURE como entidades externas (palavras-chave: "biometria", "identificação", "proteção de dados").',
+    objeto: 'Regulamentação dos requisitos técnicos dos meios de identificação eletrónica, incluindo critérios de segurança, interoperabilidade e usabilidade.',
+    objeto_origem_ia: false, // já editada após validação
+    forma_ato_prevista: 'portaria', forma_ato_origem_ia: true,
+    prazo_legal_dias: 60, prazo_origem_ia: true,
+    prazo_data: '2026-05-27',
+    area_proponente: 'metd',
+    co_proponentes: ['mp', 'mj'],
+    adjunto_responsavel: 'Rita Silva (METD)',
+    entidades_externas: ['cnpd', 'cejure'],
+    normas: [
+      { ref: 'Artigo 8.º', desc: 'Requisitos técnicos dos meios de identificação', estado: 'em_redacao', detetada_por_ia: true },
+    ],
+    // Aprovações multi-proponente
+    approvals: [
+      { company_id: 'metd', is_lead: true, state: 'aprovado', approver: 'Rita Silva', approved_at: '2026-04-26 10:14', notes: 'Concordância total.' },
+      { company_id: 'mp', is_lead: false, state: 'aprovado', approver: 'Sofia Lima', approved_at: '2026-04-27 09:30', notes: 'Sugestão de revisão tipográfica no art.º 3.º (já incorporada).' },
+      { company_id: 'mj', is_lead: false, state: 'pendente', approver: null, approved_at: null, notes: '' },
+    ],
+    // Versões
+    versoes: [
+      { numero: 'v0.1', tipo: 'interna', data: '2026-04-02', autor: 'Rita Silva', track_changes: 0, summary: 'Versão inicial gerada do template' },
+      { numero: 'v0.2', tipo: 'interna', data: '2026-04-15', autor: 'Rita Silva', track_changes: 12, summary: 'Inclusão das definições do art.º 2.º' },
+      { numero: 'v0.3', tipo: 'interna', data: '2026-04-22', autor: 'Ext: CNPD (Maria Mendes)', track_changes: 8, summary: 'Edição externa CNPD: ajustes art.º 5.º (RGPD)' },
+      { numero: 'v0.4', tipo: 'interna', data: '2026-04-23', autor: 'Rita Silva', track_changes: 3, summary: 'Aceitação parcial de track changes do CNPD' },
+      { numero: 'v1.0', tipo: 'aprovada', data: '2026-04-25', autor: 'Rita Silva', track_changes: 0, summary: 'Versão para aprovação' },
+    ],
+    // Edit invitations
+    edit_invitations: [
+      { partner: 'CNPD · Maria Mendes', permissao: 'edit', state: 'submetido', criado_em: '2026-04-18', submetido_em: '2026-04-22', result_versao: 'v0.3' },
+      { partner: 'CEJURE · Dr. Bento', permissao: 'comment_only', state: 'aberto', criado_em: '2026-04-20', submetido_em: null, result_versao: null },
+    ],
+    // Documento (HTML simplificado)
+    document_html: `<h1>Portaria n.º __/2026</h1><h2>Preâmbulo</h2><p>O Decreto-Lei n.º 18/2026 estabeleceu o regime jurídico da identificação eletrónica...</p><h2>Articulado</h2><h3>Artigo 1.º · Objeto</h3><p>A presente portaria regula os requisitos técnicos dos meios de identificação eletrónica.</p><h3>Artigo 2.º · Definições</h3><p>...</p>`,
+    historico: [
+      { data: '2026-04-01', evento: 'Plano criado · análise IA disparada', autor: 'Rita Silva (METD)' },
+      { data: '2026-04-01', evento: '🤖 Análise IA concluída (confiança 82%)', autor: 'Sistema' },
+      { data: '2026-04-01', evento: '✅ Análise IA validada · em redação', autor: 'Rita Silva (METD)' },
+      { data: '2026-04-22', evento: '📥 Edição externa CNPD recebida (v0.3)', autor: 'Sistema' },
+      { data: '2026-04-25', evento: '🗳️ Plano submetido a aprovação · 3 proponentes', autor: 'Rita Silva' },
+      { data: '2026-04-26', evento: '✓ Aprovação METD', autor: 'Rita Silva' },
+      { data: '2026-04-27', evento: '✓ Aprovação MP', autor: 'Sofia Lima' },
+    ],
+    risco: 'mid',
+  },
+  {
+    id: 'REG-00002/XXIV/2026',
+    titulo: 'Regulamentação da economia circular — certificação',
+    tipo_origem: 'proponente_via_diploma',
+    diploma_habilitante: 'DL00012/XXIV/2026',
+    state: 'em_redacao',
+    ai_status: 'validada', ai_provider: 'mock',
+    ai_confianca: 0.71,
+    ai_summary: 'Forma "Decreto Regulamentar" sugerida por densidade técnica do diploma habilitante; prazo 90 dias extraído. 2 normas detetadas. Entidades CES/ANMP/Ordem Engenheiros sugeridas.',
+    ai_validated_by: 'Tomás Brito (MAAC)',
+    ai_validated_at: '2026-04-08 11:00',
+    objeto: 'Regulamentação dos critérios de certificação de produtos circulares (artigo 14.º) e regime de taxas aplicáveis (artigo 22.º).',
+    objeto_origem_ia: true, forma_ato_origem_ia: true, prazo_origem_ia: true,
+    forma_ato_prevista: 'decreto_regulamentar',
+    prazo_legal_dias: 90, prazo_data: '2026-06-13',
+    area_proponente: 'maac',
+    co_proponentes: ['metd', 'mf'],
+    adjunto_responsavel: 'Tomás Brito (MAAC)',
+    entidades_externas: ['ces', 'anmp', 'ordem-engenheiros'],
+    normas: [
+      { ref: 'Artigo 14.º, n.º 2', desc: 'Critérios para certificação', estado: 'em_redacao', detetada_por_ia: true },
+      { ref: 'Artigo 22.º, n.º 1', desc: 'Regime de taxas', estado: 'pendente', detetada_por_ia: true },
+    ],
+    approvals: [
+      { company_id: 'maac', is_lead: true, state: 'pendente', approver: null, approved_at: null, notes: '' },
+      { company_id: 'metd', is_lead: false, state: 'pendente', approver: null, approved_at: null, notes: '' },
+      { company_id: 'mf', is_lead: false, state: 'pendente', approver: null, approved_at: null, notes: '' },
+    ],
+    versoes: [
+      { numero: 'v0.1', tipo: 'interna', data: '2026-04-08', autor: 'Tomás Brito', track_changes: 0, summary: 'Versão inicial gerada do template' },
+      { numero: 'v0.2', tipo: 'interna', data: '2026-04-15', autor: 'Tomás Brito', track_changes: 18, summary: 'Inclusão dos critérios técnicos no art.º 4.º' },
+    ],
+    edit_invitations: [],
+    document_html: `<h1>Decreto Regulamentar n.º __/2026</h1><h2>Articulado</h2><h3>Artigo 1.º · Objeto</h3><p>O presente decreto regulamentar regula os critérios de certificação de produtos circulares...</p>`,
+    historico: [
+      { data: '2026-04-08', evento: 'Plano criado · análise IA disparada', autor: 'Tomás Brito (MAAC)' },
+      { data: '2026-04-08', evento: '🤖 Análise IA concluída (confiança 71%)', autor: 'Sistema' },
+      { data: '2026-04-08', evento: '✅ Análise IA validada · em redação', autor: 'Tomás Brito (MAAC)' },
+      { data: '2026-04-15', evento: 'Versão v0.2 guardada (18 marcas de revisão)', autor: 'Tomás Brito' },
+    ],
+    risco: 'low',
+  },
+  {
+    id: 'REG-00003/XXIV/2026',
+    titulo: 'Regulamentação da pegada legislativa governamental',
+    tipo_origem: 'dsaag_auto',
+    diploma_habilitante: 'L00005-A/2026',
+    state: 'proposto',
+    ai_status: 'concluida', ai_provider: 'mock', // aguarda validação DSAAG
+    ai_confianca: 0.65,
+    ai_summary: 'Forma "Decreto-Lei" sugerida (matéria estrutural); prazo 120d extraído; 2 normas detetadas (art.º 5.º, art.º 11.º). Sem entidades externas obrigatórias detetadas. AGUARDA VALIDAÇÃO DSAAG.',
+    ai_validated_by: null, ai_validated_at: null,
+    objeto: 'Regulamentação dos requisitos do sistema de informação previstos no artigo 11.º da Lei n.º 5-A/2026.',
+    objeto_origem_ia: true, forma_ato_origem_ia: true, prazo_origem_ia: true,
+    forma_ato_prevista: 'decreto_lei',
+    prazo_legal_dias: 120, prazo_data: '2026-08-06',
+    area_proponente: null, co_proponentes: [],
+    adjunto_responsavel: null,
+    entidades_externas: [],
+    normas: [
+      { ref: 'Artigo 5.º, n.º 1', desc: 'Procedimento de registo da pegada', estado: 'pendente', detetada_por_ia: true },
+      { ref: 'Artigo 11.º', desc: 'Requisitos do sistema de informação', estado: 'pendente', detetada_por_ia: true },
+    ],
+    approvals: [],
+    versoes: [],
+    edit_invitations: [],
+    document_html: '',
+    historico: [
+      { data: '2026-04-09', evento: 'Plano criado pela DSAAG (varredura DR)', autor: 'DSAAG · sistema' },
+      { data: '2026-04-09', evento: '🤖 Análise IA concluída (confiança 65%)', autor: 'Sistema' },
+      { data: '2026-04-09', evento: 'Aguarda validação humana e atribuição de proponente', autor: 'Sistema' },
+    ],
+    risco: 'low',
+    aguarda_proponente: true,
+  },
+];
+
+// Alertas DSAAG
+const ALERTAS = [
+  {
+    id: 'alert-001', tipo: 'analise_ia_pendente_validacao', gravidade: 'warning',
+    plan_id: 'REG-00003/XXIV/2026',
+    titulo: '🤖 Análise IA por validar há > 5 dias',
+    descricao: 'REG-00003 aguarda validação humana desde 09-04-2026',
+    dias_restantes: null, gerado_em: '2026-04-15 06:00',
+  },
+  {
+    id: 'alert-002', tipo: 'plano_sem_proponente', gravidade: 'warning',
+    plan_id: 'REG-00003/XXIV/2026',
+    titulo: 'Plano sem proponente atribuído',
+    descricao: 'REG-00003 aguarda atribuição há 19 dias',
+    dias_restantes: null, gerado_em: '2026-04-09 10:30',
+  },
+  {
+    id: 'alert-003', tipo: 'aprovacao_pendente', gravidade: 'info',
+    plan_id: 'REG-00001/XXIV/2026',
+    titulo: '🗳️ Aprovação pendente · MJ',
+    descricao: 'REG-00001 aguarda aprovação do Ministério da Justiça (já aprovado por METD e MP)',
+    dias_restantes: 30, gerado_em: '2026-04-25 09:00',
+  },
+  {
+    id: 'alert-004', tipo: 'diploma_publicado_sem_plano', gravidade: 'warning',
+    diploma_id: 'DL00012/XXIV/2026',
+    titulo: 'Diploma publicado sem plano de regulamentação',
+    descricao: 'DL00012 (Economia Circular) publicado · 2 normas detetadas',
+    dias_restantes: 45, gerado_em: '2026-03-16 06:00',
+    tratado_em: '2026-04-08 14:20', tratado_por: 'Utilizador DAPL (DSAAG)',
+    acao_tomada: 'criar_plano',
+  },
+];
+
+let DIPLOMAS_VARRIDOS = [];
+
+// Helpers
+function getArea(id) { return AREAS_GOVERNATIVAS.find(a => a.id === id) || null; }
+function getEntidade(id) { return ENTIDADES_EXTERNAS.find(e => e.id === id) || null; }
+function getDiploma(id) { return DIPLOMAS.find(d => d.id === id) || null; }
+function getPlano(id) { return PLANOS.find(p => p.id === id) || null; }
+function getFormaAtoLabel(id) {
+  const f = FORMAS_ATO.find(x => x[0] === id);
+  return f ? f[1] : id;
+}
+
+function diasAteData(dateStr) {
+  if (!dateStr) return null;
+  const today = new Date('2026-04-28');
+  const target = new Date(dateStr);
+  return Math.round((target - today) / (1000 * 60 * 60 * 24));
+}
+
+// Mock AI service (simula análise)
+function mockAIAnalysis(diplomaId) {
+  const d = getDiploma(diplomaId);
+  if (!d) return null;
+  // Heurísticas simples
+  const sumario = (d.sumario || '').toLowerCase();
+  let forma = 'portaria';
+  if (sumario.includes('regime jurídico') || sumario.includes('estabelece')) forma = 'decreto_regulamentar';
+  if (sumario.includes('lei') || sumario.includes('pegada')) forma = 'decreto_lei';
+  return {
+    objeto: `Regulamentação das normas habilitantes do ${d.id}, abrangendo: ${d.normas_habilitantes.map(n => n.ref).slice(0,3).join(', ')}.`,
+    forma_ato_sugerida: forma,
+    prazo_legal_dias: d.prazo_legal_dias,
+    normas_habilitantes: d.normas_habilitantes.map(n => ({ ...n, detetada_por_ia: true, estado: 'pendente' })),
+    entidades_externas_sugeridas: sumario.includes('proteção') || sumario.includes('identif') ? ['cnpd', 'cejure'] : [],
+    confianca_global: 0.65 + Math.random() * 0.25,
+    raciocinio: `Análise mock baseada em padrões textuais. Forma "${forma}" inferida do sumário; prazo extraído dos metadados; ${d.normas_habilitantes.length} normas habilitantes detetadas.`,
+    provider: 'mock',
+  };
+}
+
+
+// === views.js ===
+// SmartLegis · Módulo de Regulamentação · Vistas v0.4
+// Adaptado pixel-a-pixel ao SmartLegis real:
+// - Cores: #F2784B (primary laranja), #3A529C (azul/roxo), #36D7B7 (turquesa wizard)
+// - Botões pill 19.5px
+// - H1 form centrado 26px
+// - Secções colapsáveis com header azul/roxo (em vez de chatter)
+// - Statusbar escondida (apenas label "Situação")
+// - Terminologia exata: "Está em:", "Ação ▼", "Avançar", "Gravar e sair", "Ver Capa"
+
+// ============ Helpers ============
+function escapeHtml(s) {
+  return (s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function pillEstado(estadoKey) {
+  const map = {
+    proposto:     ['Proposto', 'sl-pill--blue'],
+    em_redacao:   ['Em Redação', 'sl-pill--orange'],
+    em_aprovacao: ['Em Aprovação', 'sl-pill--warn'],
+    aprovado:     ['Aprovado', 'sl-pill--green'],
+    publicado:    ['Publicado', 'sl-pill--green'],
+    dispensado:   ['Dispensado', 'sl-pill--grey'],
+    cancelado:    ['Cancelado', 'sl-pill--red'],
+  };
+  const [label, cls] = map[estadoKey] || [estadoKey, 'sl-pill--grey'];
+  return `<span class="sl-pill ${cls}">${label}</span>`;
+}
+function pillAI(status) {
+  const labels = {
+    pendente:  ['🤖 Pendente',  'sl-pill--grey'],
+    em_curso:  ['🤖 Em curso',  'sl-pill--blue'],
+    concluida: ['🤖 Concluída', 'sl-pill--warn'],
+    falhou:    ['🤖 Falhou',    'sl-pill--red'],
+    validada:  ['🤖 Validada',  'sl-pill--green'],
+  };
+  const [label, cls] = labels[status] || ['—', 'sl-pill--grey'];
+  return `<span class="sl-pill ${cls}">${label}</span>`;
+}
+function pillApproval(state) {
+  const map = {
+    pendente:  ['Pendente', 'sl-pill--grey'],
+    aprovado:  ['✓ Aprovado', 'sl-pill--green'],
+    rejeitado: ['✗ Rejeitado', 'sl-pill--red'],
+  };
+  const [label, cls] = map[state] || ['—', 'sl-pill--grey'];
+  return `<span class="sl-pill ${cls}">${label}</span>`;
+}
+function badgeIA() {
+  return `<span class="sl-pill sl-pill--blue" style="margin-left:6px" title="Preenchido por IA">🤖</span>`;
+}
+function riskDot(level) { return `<span class="sl-risk sl-risk--${level}"></span>`; }
+function fmtDays(d) {
+  if (d === null || d === undefined) return '—';
+  if (d < 0) return `<span style="color:var(--sl-danger);font-weight:600">${d}d (excedido)</span>`;
+  if (d <= 30) return `<span style="color:var(--sl-warn);font-weight:600">${d}d</span>`;
+  return `${d}d`;
+}
+
+// Control Panel (SmartLegis style: breadcrumb à esquerda + ações à direita + pager)
+function renderControlPanel(opts) {
+  const bc = opts.breadcrumb || 'Dashboard';
+  return `
+    <div class="sl-cp">
+      <div class="sl-cp__breadcrumb">
+        Está em: ${bc}
+      </div>
+      <div class="sl-cp__buttons">${opts.buttons || ''}</div>
+      <div class="sl-cp__right">
+        ${opts.search || ''}
+        ${opts.pager || ''}
+        ${opts.actions || ''}
+      </div>
+    </div>
+  `;
+}
+
+// Secção colapsável (em vez de chatter Odoo)
+function renderSection(title, content, opts={}) {
+  const id = opts.id || `sec-${Math.random().toString(36).slice(2,8)}`;
+  const open = opts.open ? 'sl-section--open' : '';
+  return `
+    <div class="sl-section ${open}" id="${id}">
+      <div class="sl-section__header" onclick="toggleSection('${id}')">
+        <span>${title}</span>
+        <span class="sl-section__chevron">▾</span>
+      </div>
+      <div class="sl-section__body">${content}</div>
+    </div>
+  `;
+}
+
+// ============ Dashboard ============
+function viewDashboard() {
+  const ativos = PLANOS.filter(p => !['publicado','dispensado','cancelado'].includes(p.state)).length;
+  const iaPendente = PLANOS.filter(p => p.state === 'proposto' && p.ai_status === 'concluida').length;
+  const emAprovacao = PLANOS.filter(p => p.state === 'em_aprovacao').length;
+  const semProponente = PLANOS.filter(p => p.aguarda_proponente).length;
+
+  return `
+    ${renderControlPanel({
+      breadcrumb: 'Dashboard',
+      buttons: `<a href="#/plano/novo" class="sl-btn sl-btn--primary">Criar</a>`,
+    })}
+
+    <div class="sl-card-grid">
+      <div class="sl-card">
+        <div class="sl-card__number">${PLANOS.filter(p=>p.state!=='publicado').length}</div>
+        <h2 class="sl-card__title">MEUS PLANOS</h2>
+        <hr>
+        <a href="#/planos" class="sl-btn sl-btn--secondary">Ver Todos</a>
+      </div>
+      <div class="sl-card">
+        <div class="sl-card__number">${PLANOS.length}</div>
+        <h2 class="sl-card__title">REGULAMENTAÇÃO</h2>
+        <hr>
+        <a href="#/planos" class="sl-btn sl-btn--secondary">Ver Todos</a>
+      </div>
+      <div class="sl-card">
+        <div class="sl-card__number">${iaPendente}</div>
+        <h2 class="sl-card__title" style="font-size:13px">🤖 IA POR VALIDAR</h2>
+        <hr>
+        <a href="#/dsaag" class="sl-btn sl-btn--secondary">Ver Todos</a>
+      </div>
+      <div class="sl-card">
+        <div class="sl-card__number">${emAprovacao}</div>
+        <h2 class="sl-card__title" style="font-size:13px">EM APROVAÇÃO</h2>
+        <hr>
+        <a href="#/planos" class="sl-btn sl-btn--secondary">Ver Todos</a>
+      </div>
+      <div class="sl-card">
+        <div class="sl-card__number">${semProponente}</div>
+        <h2 class="sl-card__title" style="font-size:13px">SEM PROPONENTE</h2>
+        <hr>
+        <a href="#/dsaag" class="sl-btn sl-btn--secondary">Ver Todos</a>
+      </div>
+    </div>
+
+    <div style="max-width:1140px; margin:0 auto; padding:0 24px 24px">
+      ${renderSection('Planos Recentes', `
+        <table class="sl-table">
+          <thead><tr>
+            <th>Número</th><th>Título</th><th>IA</th><th>Estado</th><th>Aprovações</th><th>Prazo</th>
+          </tr></thead>
+          <tbody>
+            ${PLANOS.map(p => {
+              const total = p.approvals?.length || 0;
+              const aprovs = p.approvals?.filter(a => a.state === 'aprovado').length || 0;
+              return `
+                <tr onclick="location.hash='#/plano/${p.id}'">
+                  <td><strong>${p.id}</strong></td>
+                  <td>${escapeHtml(p.titulo)}</td>
+                  <td>${pillAI(p.ai_status)}</td>
+                  <td>${pillEstado(p.state)}</td>
+                  <td>${total ? `${aprovs}/${total}` : '—'}</td>
+                  <td>${riskDot(p.risco)} ${fmtDays(diasAteData(p.prazo_data))}</td>
+                </tr>
+              `;
+            }).join('')}
+          </tbody>
+        </table>
+      `, {open: true})}
+    </div>
+  `;
+}
+
+// ============ Lista de planos ============
+function viewPlanos() {
+  return `
+    ${renderControlPanel({
+      breadcrumb: '<a href="#/dashboard">Dashboard</a><span class="sl-cp__breadcrumb-sep">›</span> Planos de Regulamentação',
+      buttons: `<a href="#/plano/novo" class="sl-btn sl-btn--primary">Criar</a>`,
+      search: `<div class="sl-searchbox" style="width:377px"><input placeholder="Procurar..."><span style="color:var(--sl-text-muted)">🔍</span></div>`,
+      actions: `
+        <button class="sl-filter-pill">▼ Filtros</button>
+        <button class="sl-filter-pill">≡ Agrupar por</button>
+      `,
+      pager: `<div class="sl-pager"><span>1-${PLANOS.length} / ${PLANOS.length}</span><button class="sl-pager__nav">‹</button><button class="sl-pager__nav">›</button></div>`,
+    })}
+    <div style="padding:0">
+      <div class="sl-table-wrap" style="border-radius:0;border-left:0;border-right:0">
+        <table class="sl-table">
+          <thead><tr>
+            <th style="width:34px"><input type="checkbox"></th>
+            <th>Número</th><th>Título</th><th>Diploma habilitante</th><th>IA</th><th>Proponente</th>
+            <th>Forma de ato</th><th>Estado</th><th>Aprov.</th><th>Prazo</th>
+          </tr></thead>
+          <tbody>
+            ${PLANOS.map(p => {
+              const a = getArea(p.area_proponente);
+              const total = p.approvals?.length || 0;
+              const aprovs = p.approvals?.filter(x => x.state === 'aprovado').length || 0;
+              return `
+                <tr onclick="location.hash='#/plano/${p.id}'">
+                  <td onclick="event.stopPropagation()"><input type="checkbox"></td>
+                  <td><strong>${p.id}</strong></td>
+                  <td>${escapeHtml(p.titulo)}</td>
+                  <td>${p.diploma_habilitante}</td>
+                  <td>${pillAI(p.ai_status)}</td>
+                  <td>${a ? a.sigla : '<em class="sl-text-muted">—</em>'}</td>
+                  <td>${getFormaAtoLabel(p.forma_ato_prevista)}</td>
+                  <td>${pillEstado(p.state)}</td>
+                  <td>${total ? `<strong>${aprovs}/${total}</strong>` : '—'}</td>
+                  <td>${riskDot(p.risco)} ${fmtDays(diasAteData(p.prazo_data))}</td>
+                </tr>
+              `;
+            }).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  `;
+}
+
+// ============ Detalhe do plano ============
+function viewPlanoDetalhe(planoId, tab='dados') {
+  const p = getPlano(planoId);
+  if (!p) return `${renderControlPanel({breadcrumb:'Plano não encontrado'})}<div class="sl-empty">🤷 ${planoId}</div>`;
+  const dipl = getDiploma(p.diploma_habilitante);
+  const area = getArea(p.area_proponente);
+  const dias = diasAteData(p.prazo_data);
+
+  // Tabs do notebook (estilo SmartLegis: "Dados do procedimento", "Análise IA", etc.)
+  const tabs = [
+    ['dados', 'Dados do procedimento'],
+    ['ia', 'Análise IA'],
+    ['documento', 'Documento'],
+    ['normas', 'Normas a Regulamentar'],
+    ['acessos', 'Acessos Temporários'],
+  ];
+
+  let tabBody = '';
+  switch(tab) {
+    case 'ia': tabBody = renderTabIA(p); break;
+    case 'documento': tabBody = renderTabDocumento(p); break;
+    case 'normas': tabBody = renderTabNormas(p); break;
+    case 'acessos': tabBody = renderTabAcessos(p); break;
+    default: tabBody = renderTabDados(p, dipl, area);
+  }
+
+  // Botão principal contextual
+  let actionButtons = '';
+  if (p.state === 'proposto') {
+    if (p.ai_status === 'concluida' || p.ai_status === 'falhou') {
+      actionButtons = `<button class="sl-btn sl-btn--primary" onclick="validarIA('${p.id}')">Validar IA</button>`;
+    } else {
+      actionButtons = `<button class="sl-btn sl-btn--secondary" onclick="rerunIA('${p.id}')">Re-correr IA</button>`;
+    }
+    if (p.aguarda_proponente) {
+      actionButtons = `<button class="sl-btn sl-btn--primary" onclick="atribuirProponente('${p.id}')">Atribuir Proponente</button>` + actionButtons;
+    }
+  } else if (p.state === 'em_redacao') {
+    actionButtons = `<button class="sl-btn sl-btn--primary" onclick="submeterAprovacao('${p.id}')">Submeter à Aprovação</button>`;
+  } else if (p.state === 'em_aprovacao') {
+    actionButtons = `<button class="sl-btn sl-btn--secondary" onclick="devolverRedacao('${p.id}')">Devolver</button>`;
+  } else if (p.state === 'aprovado') {
+    actionButtons = `<button class="sl-btn sl-btn--primary" onclick="enviarPublicacao('${p.id}')">Enviar para Publicação</button>`;
+  }
+
+  // Banner contextual
+  let banner = '';
+  if (p.ai_status === 'em_curso') {
+    banner = `<div class="sl-banner"><div>🤖</div><div><strong>Análise IA em curso…</strong> Aguarde — os campos serão pré-preenchidos automaticamente.</div></div>`;
+  } else if (p.state === 'proposto' && p.ai_status === 'concluida') {
+    banner = `<div class="sl-banner sl-banner--warn"><div>🤖</div><div><strong>Análise IA concluída · confiança ${(p.ai_confianca * 100).toFixed(0)}%.</strong> Reveja os campos com 🤖 e clique em <em>Validar IA</em>.</div></div>`;
+  } else if (p.state === 'em_aprovacao') {
+    const total = p.approvals.length;
+    const aprovs = p.approvals.filter(a => a.state === 'aprovado').length;
+    banner = `<div class="sl-banner sl-banner--warn"><div>🗳️</div><div><strong>Em aprovação multi-proponente · ${aprovs}/${total} aprovaram.</strong> Todos os proponentes têm de aprovar para fechar.</div></div>`;
+  } else if (p.state === 'aprovado') {
+    banner = `<div class="sl-banner sl-banner--success"><div>✅</div><div><strong>Aprovado por todos os proponentes.</strong> Pronto para envio ao DRE.</div></div>`;
+  }
+
+  const idx = PLANOS.findIndex(x => x.id === p.id);
+
+  // Action menu items (estilo SmartLegis "Ação ▼")
+  const acaoItems = [
+    'Audições', 'Pedir Parecer Prévio', 'Retomar Procedimento',
+    'Alterar Gabinete Proponente', 'Revisão de Diploma',
+    'Alterar adjunto responsável', 'Alterar adjuntos co-responsáveis',
+    'Devolver ao proponente', 'Adic./Rem. Favoritos',
+    'Arquivar Procedimento', 'Exportar Capa', 'Exportar Nota Justificativa',
+  ];
+
+  return `
+    ${renderControlPanel({
+      breadcrumb: `<a href="#/dashboard">Dashboard</a><span class="sl-cp__breadcrumb-sep">›</span> <a href="#/planos">Regulamentação</a><span class="sl-cp__breadcrumb-sep">›</span> ${p.id}`,
+      buttons: actionButtons,
+      pager: `<div class="sl-pager">
+        <span>${idx+1} / ${PLANOS.length}</span>
+        <button class="sl-pager__nav" onclick="navegarPlano(-1)">‹</button>
+        <button class="sl-pager__nav" onclick="navegarPlano(1)">›</button>
+      </div>`,
+      actions: `
+        <div style="position:relative">
+          <button class="sl-btn sl-btn--secondary" onclick="toggleAcao(event)">Ação ▾</button>
+          <div class="sl-dropdown" id="acao-dropdown" style="right:0;top:100%">
+            ${acaoItems.map(a => `<a class="sl-dropdown__item" onclick="toast('${a} (mock)')">${a}</a>`).join('')}
+          </div>
+        </div>
+      `,
+    })}
+
+    <div class="sl-form-bg">
+      <div class="sl-form-sheet">
+        ${banner}
+
+        <h1 class="sl-form__title">${escapeHtml(p.titulo)}</h1>
+        <div class="sl-form__subtitle">${p.id} · Diploma habilitante: ${p.diploma_habilitante} · ${pillAI(p.ai_status)}</div>
+
+        <!-- Notebook (tabs) -->
+        <div class="sl-notebook">
+          <div class="sl-notebook__tabs">
+            ${tabs.map(([k, l]) => `
+              <button class="sl-notebook__tab ${tab === k ? 'sl-notebook__tab--active' : ''}"
+                      onclick="location.hash='#/plano/${p.id}/${k}'">${l}</button>
+            `).join('')}
+          </div>
+          <div class="sl-notebook__page">${tabBody}</div>
+        </div>
+
+        <!-- Secções colapsáveis (estilo SmartLegis real, em vez de chatter) -->
+        ${renderSection('🗳️ APROVAÇÕES', renderSeccaoAprovacoes(p), {open: p.state === 'em_aprovacao' || p.state === 'aprovado'})}
+        ${renderSection('📚 VERSÕES DO DOCUMENTO', renderSeccaoVersoes(p), {open: false})}
+        ${renderSection('✉️ EDIÇÃO EXTERNA', renderSeccaoEdicaoExterna(p), {open: false})}
+        ${renderSection('📅 HISTÓRICO DE EVENTOS', renderSeccaoHistorico(p), {open: false})}
+        ${renderSection('💬 COMENTÁRIOS', renderSeccaoComentarios(p), {open: false})}
+        ${renderSection('🔒 PERMISSÕES', renderSeccaoPermissoes(p), {open: false})}
+      </div>
+    </div>
+  `;
+}
+
+function renderTabDados(p, dipl, area) {
+  return `
+    <div class="sl-form__row">
+      <div class="sl-form__field">
+        <label class="sl-form__label sl-form__label--required">Número</label>
+        <div class="sl-form__value">${p.id}</div>
+      </div>
+      <div class="sl-form__field">
+        <label class="sl-form__label sl-form__label--required">Título</label>
+        <div class="sl-form__value">${escapeHtml(p.titulo)}</div>
+      </div>
+    </div>
+    <div class="sl-form__row">
+      <div class="sl-form__field">
+        <label class="sl-form__label">Diploma Habilitante</label>
+        <div class="sl-form__value"><strong>${p.diploma_habilitante}</strong>${dipl ? ` · ${escapeHtml(dipl.sumario.substring(0,60))}…` : ''}</div>
+      </div>
+      <div class="sl-form__field">
+        <label class="sl-form__label">Origem</label>
+        <div class="sl-form__value">${p.tipo_origem.replace(/_/g, ' ')}</div>
+      </div>
+    </div>
+    <div class="sl-form__row">
+      <div class="sl-form__field">
+        <label class="sl-form__label sl-form__label--required">Forma de Ato Prevista</label>
+        <div class="sl-form__value">${getFormaAtoLabel(p.forma_ato_prevista)}${p.forma_ato_origem_ia && p.ai_status !== 'validada' ? badgeIA() : ''}</div>
+      </div>
+      <div class="sl-form__field">
+        <label class="sl-form__label">Prazo Legal</label>
+        <div class="sl-form__value">${p.prazo_legal_dias} dias${p.prazo_origem_ia && p.ai_status !== 'validada' ? badgeIA() : ''}</div>
+      </div>
+    </div>
+    <div class="sl-form__row">
+      <div class="sl-form__field">
+        <label class="sl-form__label">Prazo Limite</label>
+        <div class="sl-form__value">${p.prazo_data || '—'} <span class="sl-text-muted">(${fmtDays(diasAteData(p.prazo_data))})</span></div>
+      </div>
+      <div class="sl-form__field">
+        <label class="sl-form__label">Risco</label>
+        <div class="sl-form__value">${riskDot(p.risco)} ${p.risco === 'low' ? 'Baixo' : p.risco === 'mid' ? 'Médio' : 'Alto'}</div>
+      </div>
+    </div>
+    <div class="sl-form__row">
+      <div class="sl-form__field">
+        <label class="sl-form__label">Área Governativa Proponente</label>
+        <div class="sl-form__value">${area ? `<strong>${area.sigla}</strong> · ${area.nome}` : '<em class="sl-text-muted">não atribuída</em>'}</div>
+      </div>
+      <div class="sl-form__field">
+        <label class="sl-form__label">Adjunto Responsável</label>
+        <div class="sl-form__value">${p.adjunto_responsavel || '—'}</div>
+      </div>
+    </div>
+    <div class="sl-form__row">
+      <div class="sl-form__field sl-form__field--full">
+        <label class="sl-form__label">Co-proponente(s)</label>
+        <div class="sl-form__value">${p.co_proponentes?.map(c => `<span class="sl-pill sl-pill--blue" style="margin-right:4px">${getArea(c)?.sigla}</span>`).join('') || '—'}</div>
+      </div>
+    </div>
+    <div class="sl-form__row">
+      <div class="sl-form__field sl-form__field--full">
+        <label class="sl-form__label sl-form__label--required">Objeto da Regulamentação${p.objeto_origem_ia && p.ai_status !== 'validada' ? badgeIA() : ''}</label>
+        <div class="sl-form__value" style="white-space:normal">${escapeHtml(p.objeto)}</div>
+      </div>
+    </div>
+    <div class="sl-form__row">
+      <div class="sl-form__field sl-form__field--full">
+        <label class="sl-form__label">Situação</label>
+        <div class="sl-form__value">${pillEstado(p.state)}</div>
+      </div>
+    </div>
+    <div class="sl-mt-16">
+      <a class="sl-btn sl-btn--primary" onclick="toast('Ver Capa (mock)')">Ver Capa</a>
+    </div>
+  `;
+}
+
+function renderTabIA(p) {
+  return `
+    <div class="sl-form__row">
+      <div class="sl-form__field">
+        <label class="sl-form__label">Estado IA</label>
+        <div class="sl-form__value">${pillAI(p.ai_status)}</div>
+      </div>
+      <div class="sl-form__field">
+        <label class="sl-form__label">Provedor</label>
+        <div class="sl-form__value">${p.ai_provider || '—'} (Anthropic Claude)</div>
+      </div>
+    </div>
+    <div class="sl-form__row">
+      <div class="sl-form__field">
+        <label class="sl-form__label">Confiança</label>
+        <div class="sl-form__value">${(p.ai_confianca * 100).toFixed(0)}%</div>
+      </div>
+      <div class="sl-form__field">
+        <label class="sl-form__label">Validada Por</label>
+        <div class="sl-form__value">${p.ai_validated_by || '<em class="sl-text-muted">— por validar —</em>'}</div>
+      </div>
+    </div>
+    <div class="sl-form__row">
+      <div class="sl-form__field sl-form__field--full">
+        <label class="sl-form__label">Sumário do Raciocínio</label>
+        <div class="sl-form__value" style="white-space:normal;background:var(--sl-info-bg);padding:8px 12px;border-bottom:0;border-radius:var(--sl-radius-sm)">
+          ${p.ai_summary ? escapeHtml(p.ai_summary) : '<em class="sl-text-muted">Sem análise.</em>'}
+        </div>
+      </div>
+    </div>
+    <h2 class="sl-h2">Campos pré-preenchidos pela IA</h2>
+    <table class="sl-table sl-table--inline">
+      <thead><tr><th>Campo</th><th>Valor</th><th>Origem</th></tr></thead>
+      <tbody>
+        <tr><td>Forma de ato</td><td>${getFormaAtoLabel(p.forma_ato_prevista)}</td><td>${p.forma_ato_origem_ia ? '🤖 IA' : '👤'}</td></tr>
+        <tr><td>Prazo legal</td><td>${p.prazo_legal_dias}d</td><td>${p.prazo_origem_ia ? '🤖 IA' : '👤'}</td></tr>
+        <tr><td>Objeto</td><td>${escapeHtml((p.objeto || '').substring(0,100))}</td><td>${p.objeto_origem_ia ? '🤖 IA' : '👤'}</td></tr>
+        <tr><td>Normas</td><td>${p.normas?.length || 0}</td><td>🤖 ${p.normas?.filter(n => n.detetada_por_ia).length || 0} por IA</td></tr>
+      </tbody>
+    </table>
+    ${p.state === 'proposto' && (p.ai_status === 'concluida' || p.ai_status === 'falhou') ? `
+      <div class="sl-banner sl-banner--warn sl-mt-16">
+        <div>👤</div>
+        <div>
+          <strong>Validação humana necessária.</strong>
+          Reveja os campos sugeridos pela IA. Pode editar antes de validar.
+          <div class="sl-mt-8">
+            <button class="sl-btn sl-btn--primary" onclick="validarIA('${p.id}')">Validar e Iniciar Redação</button>
+          </div>
+        </div>
+      </div>
+    ` : ''}
+  `;
+}
+
+function renderTabDocumento(p) {
+  if (p.state === 'proposto') {
+    return `<div class="sl-empty"><div class="sl-empty__icon">📄</div><div class="sl-empty__text"><strong>Sem documento ainda</strong>Documento criado ao validar a análise IA.</div></div>`;
+  }
+  const ultima = p.versoes?.[p.versoes.length-1]?.numero || 'v0.0';
+  return `
+    <div class="sl-banner">
+      <div>📄</div>
+      <div>
+        <strong>Editor com track changes (ONLYOFFICE).</strong>
+        Versão atual: <code>${ultima}</code>. Cada save consolidado gera nova versão.
+        ${p.state !== 'em_redacao' ? `<br><em>Documento bloqueado para edição (estado: ${pillEstado(p.state)}).</em>` : ''}
+      </div>
+    </div>
+    <div class="sl-flex-between sl-mb-8">
+      <div class="sl-flex">
+        <button class="sl-btn sl-btn--secondary" disabled>🔍 Track Changes ON</button>
+        <button class="sl-btn sl-btn--primary" onclick="guardarVersaoLead('${p.id}')">Guardar (LEAD)</button>
+        <button class="sl-btn sl-btn--secondary" onclick="guardarVersaoCo('${p.id}')">Guardar (Co-prop.)</button>
+        <button class="sl-btn sl-btn--secondary" onclick="guardarVersaoExterno('${p.id}')">Guardar (Externo)</button>
+        <button class="sl-btn sl-btn--secondary" onclick="convidarEditor('${p.id}')">Convidar Editor Externo</button>
+        <button class="sl-btn sl-btn--secondary" onclick="toast('Export DOCX (mock)')">Export DOCX</button>
+      </div>
+      <span class="sl-text-muted" style="font-size:11px">Última edição: ${p.versoes?.[p.versoes.length-1]?.data || '—'}</span>
+    </div>
+    <div class="sl-text-muted sl-mb-8" style="font-size:11px">
+      <em>Política de invalidação: <strong>só edições do LEAD</strong> em "Em Aprovação" invalidam aprovações dadas. Decisão DAPL.</em>
+    </div>
+    <div style="border:1px solid var(--sl-border);border-radius:var(--sl-radius-sm);background:var(--sl-bg-card);padding:24px 32px;min-height:400px;font-family:Georgia,serif;font-size:14px;line-height:1.6;${p.state !== 'em_redacao' ? 'opacity:0.7' : ''}">
+      ${p.document_html || '<em class="sl-text-muted">Documento vazio.</em>'}
+    </div>
+  `;
+}
+
+function renderTabNormas(p) {
+  return `
+    <table class="sl-table sl-table--inline">
+      <thead><tr><th>Referência</th><th>Descrição</th><th>Origem</th><th>Estado</th></tr></thead>
+      <tbody>
+        ${(p.normas || []).map(n => `
+          <tr>
+            <td><strong>${n.ref}</strong></td>
+            <td>${escapeHtml(n.desc)}</td>
+            <td>${n.detetada_por_ia ? '🤖 IA' : '👤'}</td>
+            <td>${pillEstado(n.estado === 'em_redacao' ? 'em_redacao' : n.estado === 'concluida' ? 'aprovado' : 'proposto')}</td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+  `;
+}
+
+function renderTabAcessos(p) {
+  return `<div class="sl-empty"><div class="sl-empty__icon">🔒</div><div class="sl-empty__text">Sem acessos temporários configurados.</div></div>`;
+}
+
+// ============ Secções colapsáveis (em vez de chatter) ============
+function renderSeccaoAprovacoes(p) {
+  if (!p.approvals?.length) {
+    return `<div class="sl-text-muted">Sem aprovações ainda. Aprovações são criadas ao submeter à aprovação.</div>`;
+  }
+  const total = p.approvals.length;
+  const aprovs = p.approvals.filter(a => a.state === 'aprovado').length;
+  const pct = Math.round(100 * aprovs / total);
+  return `
+    <div class="sl-progress sl-mb-8"><div class="sl-progress__bar" style="width:${pct}%"></div></div>
+    <div class="sl-text-muted sl-mb-16" style="font-size:12px">${aprovs}/${total} aprovaram (${pct}%)</div>
+    <table class="sl-table sl-table--inline">
+      <thead><tr><th>Gabinete</th><th>Tipo</th><th>Estado</th><th>Aprovou</th><th>Em</th><th>Notas</th><th>Ações</th></tr></thead>
+      <tbody>
+        ${p.approvals.map((a, idx) => `
+          <tr>
+            <td><strong>${getArea(a.company_id)?.sigla || a.company_id}</strong></td>
+            <td>${a.is_lead ? '<span class="sl-approval-row__lead-badge">LEAD</span>' : '<span class="sl-pill sl-pill--grey">CO</span>'}</td>
+            <td>${pillApproval(a.state)}</td>
+            <td>${a.approver || '—'}</td>
+            <td>${a.approved_at || '—'}</td>
+            <td><div style="max-width:180px;font-size:11px;color:var(--sl-text-muted)">${escapeHtml(a.notes || '')}</div></td>
+            <td>
+              ${a.state === 'pendente' && p.state === 'em_aprovacao' ? `
+                <button class="sl-btn sl-btn--small sl-btn--primary" onclick="aprovar('${p.id}', ${idx})">Aprovar</button>
+                <button class="sl-btn sl-btn--small sl-btn--danger" onclick="rejeitar('${p.id}', ${idx})">Rejeitar</button>
+              ` : ''}
+            </td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+  `;
+}
+
+function renderSeccaoVersoes(p) {
+  if (!p.versoes?.length) return `<div class="sl-text-muted">Sem versões.</div>`;
+  return `
+    <table class="sl-table sl-table--inline">
+      <thead><tr><th>Versão</th><th>Tipo</th><th>Data</th><th>Autor</th><th>Marcas TC</th><th>Sumário</th></tr></thead>
+      <tbody>
+        ${p.versoes.slice().reverse().map(v => `
+          <tr>
+            <td><strong>${v.numero}</strong></td>
+            <td>${v.tipo.replace('_', ' ')}</td>
+            <td>${v.data}</td>
+            <td>${escapeHtml(v.autor)}</td>
+            <td>${v.track_changes || 0}</td>
+            <td>${escapeHtml(v.summary || '')}</td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+  `;
+}
+
+function renderSeccaoEdicaoExterna(p) {
+  if (!p.edit_invitations?.length) {
+    return `
+      <div class="sl-text-muted sl-mb-8">Sem convites de edição externa.</div>
+      <button class="sl-btn sl-btn--secondary" ${p.state !== 'em_redacao' ? 'disabled' : ''} onclick="convidarEditor('${p.id}')">Convidar Editor Externo</button>
+    `;
+  }
+  return `
+    <table class="sl-table sl-table--inline">
+      <thead><tr><th>Ator Externo</th><th>Permissão</th><th>Estado</th><th>Criado</th><th>Submetido</th><th>Versão Resultante</th></tr></thead>
+      <tbody>
+        ${p.edit_invitations.map(i => `
+          <tr>
+            <td><strong>${escapeHtml(i.partner)}</strong></td>
+            <td><span class="sl-pill ${i.permissao==='edit'?'sl-pill--orange':'sl-pill--blue'}">${i.permissao}</span></td>
+            <td>${i.state}</td>
+            <td>${i.criado_em}</td>
+            <td>${i.submetido_em || '—'}</td>
+            <td>${i.result_versao || '—'}</td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+    <div class="sl-mt-16">
+      <button class="sl-btn sl-btn--secondary" ${p.state !== 'em_redacao' ? 'disabled' : ''} onclick="convidarEditor('${p.id}')">Novo Convite</button>
+    </div>
+  `;
+}
+
+function renderSeccaoHistorico(p) {
+  if (!p.historico?.length) return `<div class="sl-text-muted">Sem eventos.</div>`;
+  return `
+    <div class="sl-timeline">
+      ${p.historico.slice().reverse().map(h => `
+        <div class="sl-timeline__item sl-timeline__item--done">
+          <div class="sl-timeline__title">${escapeHtml(h.evento)}</div>
+          <div class="sl-timeline__meta">${h.data} · ${escapeHtml(h.autor)}</div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+function renderSeccaoComentarios(p) {
+  // Estilo SmartLegis real: tabela com Carregar / + Criar
+  return `
+    <div class="sl-flex sl-mb-8" style="gap:8px">
+      <button class="sl-btn sl-btn--secondary">Carregar</button>
+      <button class="sl-btn sl-btn--secondary">+ Criar</button>
+    </div>
+    <table class="sl-table sl-table--inline">
+      <thead><tr><th>#</th><th>Comentário</th><th>Criado por</th><th>Data criação</th><th>Tarefa</th></tr></thead>
+      <tbody>
+        <tr><td colspan="5" class="sl-text-muted" style="text-align:center;padding:16px"><em>Sem comentários.</em></td></tr>
+      </tbody>
+    </table>
+  `;
+}
+
+function renderSeccaoPermissoes(p) {
+  return `
+    <table class="sl-table sl-table--inline">
+      <thead><tr><th>Papel</th><th>Ler</th><th>Editar</th><th>Aprovar</th></tr></thead>
+      <tbody>
+        <tr><td>DSAAG</td><td>✓</td><td>✓</td><td>—</td></tr>
+        <tr><td>Proponente Principal</td><td>✓</td><td>✓</td><td>✓</td></tr>
+        <tr><td>Co-proponente</td><td>✓</td><td>✓</td><td>✓</td></tr>
+        <tr><td>GSEPCM</td><td>✓</td><td>—</td><td>—</td></tr>
+        <tr><td>Ator Externo</td><td>(magic link)</td><td>(via convite)</td><td>—</td></tr>
+      </tbody>
+    </table>
+  `;
+}
+
+// ============ Wizard (3 passos · estilo SmartLegis com círculos turquesa) ============
+let wizardState = {
+  step: 1,
+  diploma_habilitante: null,
+  origem_diploma: 'em_curso',
+  tipo_origem: 'proponente_via_diploma',
+  titulo: '',
+  forma_ato: 'portaria',
+  correr_ia: true,
+};
+
+function viewWizard() {
+  const steps = [
+    { num: 1, label: 'INÍCIO' },
+    { num: 2, label: 'VALIDAÇÃO OU PREENCHIMENTO DO FORMULÁRIO AVALIAÇÃO LEGISLATIVA' },
+    { num: 3, label: 'CONCLUSÃO' },
+  ];
+  return `
+    ${renderControlPanel({
+      breadcrumb: '<a href="#/dashboard">Dashboard</a><span class="sl-cp__breadcrumb-sep">›</span> <a href="#/planos">Regulamentação</a><span class="sl-cp__breadcrumb-sep">›</span> Novo',
+    })}
+
+    <div class="sl-form-bg">
+      <div class="sl-wizard">
+        <div class="sl-wizard__stepper">
+          ${steps.map((s, i) => `
+            <div class="sl-wizard__step ${s.num < wizardState.step ? 'sl-wizard__step--done' : s.num === wizardState.step ? 'sl-wizard__step--active' : ''}">
+              <div class="sl-wizard__circle">${s.num}</div>
+              <div class="sl-wizard__label">${s.label}</div>
+            </div>
+            ${i < steps.length - 1 ? '<div class="sl-wizard__connector"></div>' : ''}
+          `).join('')}
+        </div>
+
+        <div class="sl-wizard__intro">
+          ${wizardState.step === 1 ? 'Indique o diploma habilitante. A IA preenche os restantes campos automaticamente.' :
+            wizardState.step === 2 ? 'Reveja os campos pré-preenchidos pela análise IA.' :
+            'Confirmação final.'}
+        </div>
+
+        ${wizardState.step === 1 ? wizardStep1() :
+          wizardState.step === 2 ? wizardStep2() :
+          wizardStep3()}
+
+        <div class="sl-wizard__footer">
+          <button class="sl-btn sl-btn--secondary" onclick="location.hash='#/dashboard'">Cancelar</button>
+          <div class="sl-wizard__footer-spacer"></div>
+          ${wizardState.step > 1 ? `<button class="sl-btn sl-btn--secondary" onclick="wizardBack()">Anterior</button>` : ''}
+          <a class="sl-btn--link sl-btn" onclick="toast('Gravar e sair (mock)')">Gravar e sair</a>
+          ${wizardState.step < 3 ?
+            `<button class="sl-btn sl-btn--primary" onclick="wizardNext()">Avançar</button>` :
+            `<button class="sl-btn sl-btn--primary" onclick="wizardCriar()">Criar Plano</button>`}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function wizardStep1() {
+  const diplomas = DIPLOMAS.filter(d => wizardState.origem_diploma === 'em_curso' ? !d.data_publicacao : !!d.data_publicacao);
+  const sel = wizardState.diploma_habilitante ? getDiploma(wizardState.diploma_habilitante) : null;
+  return `
+    <div class="sl-form__row">
+      <div class="sl-form__field">
+        <label class="sl-form__label">Origem do diploma</label>
+        <div class="sl-radio-group">
+          <label class="sl-radio">
+            <input type="radio" name="origem" ${wizardState.origem_diploma==='em_curso'?'checked':''} onchange="wizardState.origem_diploma='em_curso';wizardState.diploma_habilitante=null;app.rerender()">
+            <span>Projeto em curso</span>
+          </label>
+          <label class="sl-radio">
+            <input type="radio" name="origem" ${wizardState.origem_diploma==='publicado'?'checked':''} onchange="wizardState.origem_diploma='publicado';wizardState.diploma_habilitante=null;app.rerender()">
+            <span>Diploma publicado</span>
+          </label>
+        </div>
+      </div>
+      <div class="sl-form__field">
+        <label class="sl-form__label sl-form__label--required">Diploma Habilitante</label>
+        <select class="sl-form__select" onchange="wizardState.diploma_habilitante=this.value;app.rerender()">
+          <option value="">— escolha —</option>
+          ${diplomas.map(d => `<option value="${d.id}" ${wizardState.diploma_habilitante===d.id?'selected':''}>${d.id} · ${escapeHtml(d.sumario.substring(0,70))}</option>`).join('')}
+        </select>
+      </div>
+    </div>
+    <div class="sl-form__row">
+      <div class="sl-form__field">
+        <label class="sl-form__label">Título</label>
+        <input type="text" class="sl-form__input" value="${escapeHtml(wizardState.titulo)}" placeholder="${sel ? 'Regulamentação de ' + sel.id : '...'}" oninput="wizardState.titulo=this.value">
+      </div>
+      <div class="sl-form__field">
+        <label class="sl-form__label">Origem</label>
+        <select class="sl-form__select" onchange="wizardState.tipo_origem=this.value">
+          <option value="proponente_via_diploma" ${wizardState.tipo_origem==='proponente_via_diploma'?'selected':''}>Proponente (via diploma)</option>
+          <option value="dsaag_auto" ${wizardState.tipo_origem==='dsaag_auto'?'selected':''}>DSAAG (auto)</option>
+          <option value="dsaag_manual" ${wizardState.tipo_origem==='dsaag_manual'?'selected':''}>DSAAG (manual)</option>
+        </select>
+      </div>
+    </div>
+    <div class="sl-form__row">
+      <div class="sl-form__field sl-form__field--full">
+        <label class="sl-form__label">Correr análise IA imediatamente?</label>
+        <div class="sl-radio-group">
+          <label class="sl-radio"><input type="radio" name="corrIA" ${wizardState.correr_ia?'checked':''} onchange="wizardState.correr_ia=true"><span>Sim (recomendado)</span></label>
+          <label class="sl-radio"><input type="radio" name="corrIA" ${!wizardState.correr_ia?'checked':''} onchange="wizardState.correr_ia=false"><span>Não</span></label>
+        </div>
+      </div>
+    </div>
+    ${sel ? `
+      <div class="sl-banner sl-mt-16">
+        <div>📄</div>
+        <div>
+          <strong>${sel.id} · ${sel.tipo}</strong>
+          ${escapeHtml(sel.sumario)}<br>
+          <span class="sl-text-muted">Proponente: ${getArea(sel.proponente)?.sigla} · Prazo legal: ${sel.prazo_legal_dias}d · ${sel.normas_habilitantes.length} normas habilitantes detetadas no texto</span>
+        </div>
+      </div>
+    ` : ''}
+  `;
+}
+
+function wizardStep2() {
+  const dipl = getDiploma(wizardState.diploma_habilitante);
+  return `
+    <div class="sl-banner sl-banner--warn">
+      <div>🤖</div>
+      <div><strong>Pré-visualização da Análise IA.</strong> Os campos abaixo serão pré-preenchidos pela IA Claude após criar o plano. No estado <code>proposto</code> poderá rever, editar e validar.</div>
+    </div>
+    <div class="sl-form__row">
+      <div class="sl-form__field"><label class="sl-form__label">Diploma habilitante</label><div class="sl-form__value">${dipl?.id}</div></div>
+      <div class="sl-form__field"><label class="sl-form__label">Sumário</label><div class="sl-form__value" style="white-space:normal">${escapeHtml(dipl?.sumario || '')}</div></div>
+    </div>
+    <div class="sl-form__row">
+      <div class="sl-form__field"><label class="sl-form__label">Forma de ato (será sugerida)</label><div class="sl-form__value">🤖 Pendente análise</div></div>
+      <div class="sl-form__field"><label class="sl-form__label">Prazo legal (será extraído)</label><div class="sl-form__value">🤖 Pendente análise</div></div>
+    </div>
+    <div class="sl-form__row">
+      <div class="sl-form__field sl-form__field--full"><label class="sl-form__label">Objeto (será preenchido)</label><div class="sl-form__value" style="font-style:italic">🤖 A IA analisará "${dipl?.tipo || 'o diploma'}" e extrairá as normas habilitantes…</div></div>
+    </div>
+  `;
+}
+
+function wizardStep3() {
+  const dipl = getDiploma(wizardState.diploma_habilitante);
+  return `
+    <div class="sl-banner sl-banner--success">
+      <div>✅</div>
+      <div><strong>Pronto a criar.</strong> O plano será criado em estado <code>proposto</code>. ${wizardState.correr_ia ? 'A análise IA dispara automaticamente.' : 'Análise IA não será disparada agora.'}</div>
+    </div>
+    <div class="sl-form__row">
+      <div class="sl-form__field"><label class="sl-form__label">Diploma habilitante</label><div class="sl-form__value"><strong>${dipl?.id}</strong></div></div>
+      <div class="sl-form__field"><label class="sl-form__label">Origem</label><div class="sl-form__value">${wizardState.tipo_origem.replace(/_/g,' ')}</div></div>
+    </div>
+    <div class="sl-form__row">
+      <div class="sl-form__field sl-form__field--full"><label class="sl-form__label">Título</label><div class="sl-form__value">${escapeHtml(wizardState.titulo) || `Regulamentação de ${dipl?.id}`}</div></div>
+    </div>
+  `;
+}
+
+// ============ Vista DSAAG ============
+function viewDsaag() {
+  const pendentes = ALERTAS.filter(a => !a.tratado_em);
+  const tratados = ALERTAS.filter(a => a.tratado_em);
+  const iaPendente = PLANOS.filter(p => p.state === 'proposto' && p.ai_status === 'concluida');
+
+  return `
+    ${renderControlPanel({
+      breadcrumb: '<a href="#/dashboard">Dashboard</a><span class="sl-cp__breadcrumb-sep">›</span> Vista DSAAG',
+      buttons: `<button class="sl-btn sl-btn--primary" onclick="varrerDR()">Varrer DR Agora</button>`,
+    })}
+
+    <div style="padding:24px;max-width:1140px;margin:0 auto">
+      <div class="sl-card-grid" style="padding:0 0 16px">
+        <div class="sl-card" style="border-left:3px solid var(--sl-danger)">
+          <div class="sl-card__number">${pendentes.length}</div>
+          <h2 class="sl-card__title" style="font-size:13px">ALERTAS PENDENTES</h2>
+        </div>
+        <div class="sl-card" style="border-left:3px solid var(--sl-warn)">
+          <div class="sl-card__number">${iaPendente.length}</div>
+          <h2 class="sl-card__title" style="font-size:13px">🤖 IA POR VALIDAR</h2>
+        </div>
+        <div class="sl-card">
+          <div class="sl-card__number">${tratados.length}</div>
+          <h2 class="sl-card__title" style="font-size:13px">TRATADOS (MÊS)</h2>
+        </div>
+        <div class="sl-card">
+          <div class="sl-card__number" style="font-size:14px;font-weight:500">2026-04-26<br>06:00</div>
+          <h2 class="sl-card__title" style="font-size:11px">ÚLTIMA VARREDURA</h2>
+        </div>
+      </div>
+
+      ${iaPendente.length ? renderSection(`🤖 ANÁLISES IA POR VALIDAR (${iaPendente.length})`, `
+        <table class="sl-table sl-table--inline">
+          <thead><tr><th>Plano</th><th>Diploma</th><th>Confiança</th><th>Há</th><th>Ações</th></tr></thead>
+          <tbody>
+            ${iaPendente.map(p => `
+              <tr>
+                <td><strong>${p.id}</strong></td>
+                <td>${p.diploma_habilitante}</td>
+                <td>${(p.ai_confianca*100).toFixed(0)}%</td>
+                <td>${diasAteData(p.historico?.[0]?.data)}d</td>
+                <td><a href="#/plano/${p.id}/ia" class="sl-btn sl-btn--small sl-btn--primary">Validar</a></td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      `, {open: true}) : ''}
+
+      ${renderSection(`⚠️ ALERTAS PENDENTES (${pendentes.length})`,
+        pendentes.length === 0 ? '<div class="sl-text-muted">🎉 Sem alertas pendentes.</div>' :
+        pendentes.map(a => alertaRow(a)).join(''),
+        {open: true}
+      )}
+
+      ${renderSection(`📥 DIPLOMAS DETETADOS (${DIPLOMAS_VARRIDOS.length})`,
+        DIPLOMAS_VARRIDOS.length === 0 ?
+          `<div class="sl-empty"><div class="sl-empty__icon">📭</div><div class="sl-empty__text"><strong>Nenhum diploma a aguardar.</strong>Clique em <em>Varrer DR Agora</em> para simular.</div></div>` :
+          `<table class="sl-table sl-table--inline">
+            <thead><tr><th>Diploma</th><th>Publicado</th><th>Normas</th><th>Ações</th></tr></thead>
+            <tbody>${DIPLOMAS_VARRIDOS.map(d => `
+              <tr>
+                <td><strong>${d.id}</strong><div class="sl-text-muted" style="font-size:11px">${escapeHtml(d.sumario.substring(0,70))}…</div></td>
+                <td>${d.data_publicacao}</td>
+                <td>${d.normas_habilitantes.length}</td>
+                <td>
+                  <button class="sl-btn sl-btn--small sl-btn--primary" onclick="dsaagAceitar('${d.id}')">Criar plano</button>
+                  <button class="sl-btn sl-btn--small sl-btn--secondary" onclick="dsaagAtribuir('${d.id}')">Atribuir</button>
+                  <button class="sl-btn sl-btn--small sl-btn--link" onclick="dsaagDispensar('${d.id}')">Dispensar</button>
+                </td>
+              </tr>`).join('')}
+            </tbody>
+          </table>`,
+        {open: DIPLOMAS_VARRIDOS.length > 0}
+      )}
+
+      ${renderSection(`✅ HISTÓRICO DE TRATAMENTO (${tratados.length})`,
+        tratados.length === 0 ? '<div class="sl-text-muted">Nada tratado.</div>' :
+        tratados.map(a => alertaRow(a, true)).join(''),
+        {open: false}
+      )}
+    </div>
+  `;
+}
+
+function alertaRow(a, isHistorico=false) {
+  const cls = a.gravidade === 'critical' ? 'sl-alert-row--critical' : a.gravidade === 'warning' ? 'sl-alert-row--warning' : 'sl-alert-row--info';
+  const icone = a.gravidade === 'critical' ? '🚨' : a.gravidade === 'warning' ? '⚠️' : 'ℹ️';
+  const link = a.plan_id ? `#/plano/${a.plan_id}` : '#/diplomas-publicados';
+  return `
+    <div class="sl-alert-row ${cls}">
+      <div style="font-size:18px">${icone}</div>
+      <div>
+        <div class="sl-alert-row__title">${escapeHtml(a.titulo)}</div>
+        <div class="sl-alert-row__desc">${escapeHtml(a.descricao)} · ${a.gerado_em}</div>
+        ${isHistorico ? `<div class="sl-text-muted" style="font-size:11px;margin-top:4px">✓ Tratado por ${a.tratado_por} em ${a.tratado_em}</div>` : ''}
+      </div>
+      <div>${a.dias_restantes !== null && a.dias_restantes !== undefined ? fmtDays(a.dias_restantes) : ''}</div>
+      <div class="sl-alert-row__actions">
+        ${isHistorico ? `<a href="${link}" class="sl-btn sl-btn--small sl-btn--link">Ver</a>` :
+          `<a href="${link}" class="sl-btn sl-btn--small sl-btn--secondary">Ver</a>
+           <button class="sl-btn sl-btn--small sl-btn--primary" onclick="tratarAlerta('${a.id}')">Tratar</button>`}
+      </div>
+    </div>
+  `;
+}
+
+function viewDiplomasPublicados() {
+  const publicados = DIPLOMAS.filter(d => d.estado === 'Publicado');
+  return `
+    ${renderControlPanel({
+      breadcrumb: '<a href="#/dashboard">Dashboard</a><span class="sl-cp__breadcrumb-sep">›</span> Diplomas Publicados',
+      buttons: `<button class="sl-btn sl-btn--primary" onclick="varrerDR()">Varrer DR</button>`,
+    })}
+    <div style="padding:24px;max-width:1140px;margin:0 auto">
+      <div class="sl-banner">
+        <div>🔄</div>
+        <div><strong>Deteção automática.</strong> Job diário (06h00) varre o DR e identifica diplomas com normas habilitantes via análise IA Claude.</div>
+      </div>
+      <div class="sl-table-wrap">
+        <table class="sl-table">
+          <thead><tr>
+            <th style="width:34px"><input type="checkbox"></th>
+            <th>Diploma</th><th>Sumário</th><th>Publicado</th><th>Normas</th><th>Plano</th>
+          </tr></thead>
+          <tbody>${publicados.map(d => `
+            <tr>
+              <td><input type="checkbox"></td>
+              <td><strong>${d.id}</strong><div class="sl-text-muted" style="font-size:11px">${d.dr || ''}</div></td>
+              <td>${escapeHtml(d.sumario)}</td>
+              <td>${d.data_publicacao}</td>
+              <td>${d.normas_habilitantes.length}</td>
+              <td>${d.tem_plano_regulamentacao ? '<span class="sl-pill sl-pill--green">tem plano</span>' : '<span class="sl-pill sl-pill--warn">sem plano</span>'}</td>
+            </tr>`).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  `;
+}
+
+// ============ Helpers de UI dinâmicos ============
+function toggleSection(id) {
+  const el = document.getElementById(id);
+  if (el) el.classList.toggle('sl-section--open');
+}
+function toggleAcao(e) {
+  e.stopPropagation();
+  const dd = document.getElementById('acao-dropdown');
+  if (dd) dd.classList.toggle('is-open');
+}
+document.addEventListener('click', () => {
+  const dd = document.getElementById('acao-dropdown');
+  if (dd) dd.classList.remove('is-open');
+  const sb = document.getElementById('sidebar');
+  if (sb) sb.classList.remove('is-open');
+});
+
+
+// === app.js ===
+// SmartLegis · Módulo de Regulamentação · Mock app v0.2 (routing + ações)
+
+const app = {
+  current: null,
+  rerender() { router(); },
+};
+
+// ============ Routing ============
+function router() {
+  const hash = location.hash.replace(/^#\//, '') || 'dashboard';
+  const parts = hash.split('/').filter(Boolean);
+  const main = document.getElementById('main');
+  const breadcrumb = document.getElementById('breadcrumb');
+
+  const route = parts[0];
+
+  let html = '';
+  let bc = 'Dashboard';
+  if (route === 'dashboard') { html = viewDashboard(); bc = 'Dashboard'; }
+  else if (route === 'planos') { html = viewPlanos(); bc = 'Planos'; }
+  else if (route === 'plano' && parts[1] === 'novo') {
+    if (!app.lastRoute || app.lastRoute !== 'plano-novo') {
+      wizardState = {
+        step: 1,
+        diploma_habilitante: null, origem_diploma: 'em_curso',
+        tipo_origem: 'proponente_via_diploma', titulo: '',
+        forma_ato: 'portaria', correr_ia: true,
+      };
+    }
+    html = viewWizard(); bc = 'Planos · Novo';
+    app.lastRoute = 'plano-novo';
+  }
+  else if (route === 'plano' && parts[1]) {
+    let id, tab;
+    if (parts.length >= 4) {
+      id = parts.slice(1, 4).join('/');
+      tab = parts[4] || 'dados';
+    } else {
+      id = parts[1]; tab = parts[2] || 'dados';
+    }
+    html = viewPlanoDetalhe(id, tab);
+    bc = `Planos · ${id}`;
+  }
+  else if (route === 'dsaag') { html = viewDsaag(); bc = 'DSAAG'; }
+  else if (route === 'diplomas-publicados') { html = viewDiplomasPublicados(); bc = 'Diplomas publicados'; }
+  else { html = viewDashboard(); }
+
+  main.innerHTML = html;
+  // Breadcrumb na topbar SmartLegis: "Está em: ..."
+  const segments = bc.split(' · ');
+  if (breadcrumb) {
+    breadcrumb.innerHTML = `Está em: <a href="#/dashboard">Dashboard</a>${segments.length > 1 ? ' › ' + segments.slice(1).join(' › ') : ''}`;
+  }
+  // Marca item ativo no sidebar
+  document.querySelectorAll('.sl-sidebar__item').forEach(a => a.classList.remove('sl-sidebar__item--active'));
+  const sideLink = document.querySelector(`.sl-sidebar__item[data-route="${route}"]`);
+  if (sideLink) sideLink.classList.add('sl-sidebar__item--active');
+  if (route !== 'plano' || parts[1] !== 'novo') app.lastRoute = route;
+  refreshAlertCount();
+}
+
+window.addEventListener('hashchange', router);
+window.addEventListener('DOMContentLoaded', () => {
+  router();
+  // Sidebar como popup acionado pelo logo (estilo SmartLegis real)
+  const logo = document.getElementById('logoToggle');
+  if (logo) {
+    logo.addEventListener('click', (e) => {
+      e.stopPropagation();
+      document.getElementById('sidebar').classList.toggle('is-open');
+    });
+  }
+  document.getElementById('alertsBtn').addEventListener('click', () => location.hash = '#/dsaag');
+});
+
+function refreshAlertCount() {
+  const el = document.getElementById('alertCount');
+  const pendentes = ALERTAS.filter(a => !a.tratado_em).length + DIPLOMAS_VARRIDOS.length;
+  el.textContent = pendentes;
+  el.style.display = pendentes > 0 ? '' : 'none';
+}
+
+function toast(msg, type='') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'sl-toast is-open' + (type ? ` sl-toast--${type}` : '');
+  setTimeout(() => { t.className = 'sl-toast'; }, 2400);
+}
+
+// Wizard navigation (3-step SmartLegis)
+function wizardNext() {
+  if (wizardState.step === 1 && !wizardState.diploma_habilitante) {
+    toast('Selecione um diploma habilitante', 'error');
+    return;
+  }
+  if (wizardState.step < 3) {
+    wizardState.step++;
+    app.rerender();
+  }
+}
+function wizardBack() {
+  if (wizardState.step > 1) {
+    wizardState.step--;
+    app.rerender();
+  }
+}
+
+// ============ Wizard ============
+function wizardCriar() {
+  if (!wizardState.diploma_habilitante) { toast('Selecione um diploma', 'error'); return; }
+  const d = getDiploma(wizardState.diploma_habilitante);
+  const next = String(PLANOS.length + 1).padStart(5, '0');
+  const novoId = `REG-${next}/XXIV/2026`;
+  const titulo = wizardState.titulo || `Regulamentação de ${d.id}`;
+  // Criar plano em estado 'proposto' com IA pendente
+  const novoPlano = {
+    id: novoId, titulo,
+    tipo_origem: wizardState.tipo_origem,
+    diploma_habilitante: d.id,
+    state: 'proposto',
+    ai_status: wizardState.correr_ia ? 'em_curso' : 'pendente',
+    ai_provider: 'mock',
+    ai_executed_at: new Date().toISOString().slice(0,16).replace('T',' '),
+    ai_validated_by: null, ai_validated_at: null,
+    ai_confianca: 0,
+    ai_summary: '',
+    objeto: '(a preencher pela IA…)',
+    objeto_origem_ia: false, forma_ato_origem_ia: false, prazo_origem_ia: false,
+    forma_ato_prevista: 'portaria',
+    prazo_legal_dias: d.prazo_legal_dias,
+    prazo_data: d.data_publicacao
+      ? new Date(new Date(d.data_publicacao).getTime() + d.prazo_legal_dias * 86400000).toISOString().slice(0,10)
+      : null,
+    area_proponente: wizardState.tipo_origem === 'proponente_via_diploma' ? d.proponente : null,
+    co_proponentes: [], adjunto_responsavel: 'Utilizador DAPL (DAPL)',
+    entidades_externas: [], normas: [],
+    approvals: [], versoes: [], edit_invitations: [],
+    document_html: '',
+    historico: [{ data: new Date().toISOString().slice(0,10), evento: 'Plano criado · análise IA disparada', autor: 'Utilizador DAPL' }],
+    risco: 'low',
+    aguarda_proponente: wizardState.tipo_origem !== 'proponente_via_diploma',
+  };
+  PLANOS.push(novoPlano);
+  toast(`Plano ${novoId} criado · IA a correr…`, 'success');
+
+  // Simular IA assíncrona após 1s
+  if (wizardState.correr_ia) {
+    setTimeout(() => {
+      const result = mockAIAnalysis(d.id);
+      novoPlano.ai_status = 'concluida';
+      novoPlano.ai_confianca = result.confianca_global;
+      novoPlano.ai_summary = result.raciocinio;
+      novoPlano.objeto = result.objeto;
+      novoPlano.objeto_origem_ia = true;
+      novoPlano.forma_ato_prevista = result.forma_ato_sugerida;
+      novoPlano.forma_ato_origem_ia = true;
+      novoPlano.prazo_legal_dias = result.prazo_legal_dias;
+      novoPlano.prazo_origem_ia = true;
+      novoPlano.normas = result.normas_habilitantes;
+      novoPlano.entidades_externas = result.entidades_externas_sugeridas;
+      novoPlano.historico.push({
+        data: new Date().toISOString().slice(0,10),
+        evento: `🤖 Análise IA concluída (confiança ${(result.confianca_global*100).toFixed(0)}%)`,
+        autor: 'Sistema',
+      });
+      app.rerender();
+      toast(`🤖 Análise IA concluída · confiança ${(result.confianca_global*100).toFixed(0)}%`, 'success');
+    }, 1500);
+  }
+  setTimeout(() => location.hash = `#/plano/${novoId}`, 700);
+}
+
+// ============ Ações no detalhe do plano ============
+function validarIA(planoId) {
+  const p = getPlano(planoId);
+  if (!p) return;
+  p.ai_status = 'validada';
+  p.ai_validated_by = 'Utilizador DAPL (DAPL)';
+  p.ai_validated_at = new Date().toISOString().slice(0,16).replace('T',' ');
+  p.state = 'em_redacao';
+  // Cria v0.1
+  if (!p.versoes.length) {
+    p.versoes.push({
+      numero: 'v0.1', tipo: 'interna',
+      data: new Date().toISOString().slice(0,10),
+      autor: 'Utilizador DAPL', track_changes: 0,
+      summary: 'Versão inicial gerada do template',
+    });
+  }
+  if (!p.document_html) {
+    p.document_html = `<h1>${getFormaAtoLabel(p.forma_ato_prevista)} n.º __/2026</h1><h2>Preâmbulo</h2><p>[a desenvolver]</p><h2>Articulado</h2><h3>Artigo 1.º · Objeto</h3><p>${escapeHtml(p.objeto)}</p>`;
+  }
+  p.historico.push({
+    data: new Date().toISOString().slice(0,10),
+    evento: '✅ Análise IA validada · em redação',
+    autor: 'Utilizador DAPL',
+  });
+  toast('IA validada · plano em redação', 'success');
+  app.rerender();
+}
+
+function rerunIA(planoId) {
+  const p = getPlano(planoId);
+  if (!p) return;
+  p.ai_status = 'em_curso';
+  app.rerender();
+  toast('🤖 A re-correr análise IA...');
+  setTimeout(() => {
+    const result = mockAIAnalysis(p.diploma_habilitante);
+    p.ai_status = 'concluida';
+    p.ai_confianca = result.confianca_global;
+    p.ai_summary = result.raciocinio;
+    p.objeto = result.objeto; p.objeto_origem_ia = true;
+    p.forma_ato_prevista = result.forma_ato_sugerida; p.forma_ato_origem_ia = true;
+    p.prazo_legal_dias = result.prazo_legal_dias; p.prazo_origem_ia = true;
+    p.normas = result.normas_habilitantes;
+    p.historico.push({ data: new Date().toISOString().slice(0,10), evento: '🤖 IA re-executada', autor: 'Utilizador DAPL' });
+    toast('🤖 IA atualizada', 'success');
+    app.rerender();
+  }, 1500);
+}
+
+function guardarVersao(planoId, autorRole='lead') {
+  // autorRole: 'lead' | 'co' | 'externo'
+  // Só edições do lead invalidam aprovações já dadas (decisão DAPL 2026-04-28)
+  const p = getPlano(planoId);
+  if (!p) return;
+  if (p.state !== 'em_redacao' && p.state !== 'em_aprovacao') {
+    toast('Só pode guardar em "Em Redação" ou "Em Aprovação"', 'error'); return;
+  }
+  const last = p.versoes[p.versoes.length-1]?.numero || 'v0.0';
+  const [maj, min] = last.replace('v','').split('.');
+  const next = `v${maj}.${parseInt(min)+1}`;
+  const autorLabel = autorRole === 'lead' ? 'Utilizador DAPL (LEAD)'
+                   : autorRole === 'co' ? 'Co-proponente · Sofia Lima'
+                   : 'Externo · CEJURE';
+  p.versoes.push({
+    numero: next, tipo: 'interna',
+    data: new Date().toISOString().slice(0,10),
+    autor: autorLabel, track_changes: Math.floor(Math.random()*15),
+    summary: `Save consolidado por ${autorRole === 'lead' ? 'lead' : autorRole}`,
+  });
+  p.historico.push({
+    data: new Date().toISOString().slice(0,10),
+    evento: `💾 Versão ${next} guardada (autor: ${autorRole})`,
+    autor: autorLabel,
+  });
+  // Política: só edição do LEAD invalida aprovações
+  if (p.state === 'em_aprovacao') {
+    if (autorRole === 'lead') {
+      p.approvals.forEach(a => { if (a.state === 'aprovado') { a.state = 'pendente'; a.approver = null; a.approved_at = null; }});
+      p.state = 'em_redacao';
+      p.historico.push({
+        data: new Date().toISOString().slice(0,10),
+        evento: '⚠️ LEAD alterou · aprovações invalidadas · plano volta a Em Redação',
+        autor: 'Sistema',
+      });
+      toast(`${next} guardada · aprovações invalidadas (lead editou)`, 'success');
+    } else {
+      p.historico.push({
+        data: new Date().toISOString().slice(0,10),
+        evento: `ℹ️ ${autorRole} editou · aprovações mantidas (não é lead)`,
+        autor: 'Sistema',
+      });
+      toast(`${next} guardada · aprovações mantidas (não é edição do lead)`, 'success');
+    }
+  } else {
+    toast(`${next} guardada`, 'success');
+  }
+  app.rerender();
+}
+
+// Helpers para demonstração — simular edição de cada perfil
+function guardarVersaoLead(planoId) { guardarVersao(planoId, 'lead'); }
+function guardarVersaoCo(planoId) { guardarVersao(planoId, 'co'); }
+function guardarVersaoExterno(planoId) { guardarVersao(planoId, 'externo'); }
+
+function convidarEditor(planoId) {
+  const p = getPlano(planoId);
+  if (!p) return;
+  const partner = prompt('Nome do ator externo:', 'CEJURE · Dr. Ferreira');
+  if (!partner) return;
+  const permissao = confirm('OK = edição (track changes), Cancelar = apenas comentar') ? 'edit' : 'comment_only';
+  p.edit_invitations.push({
+    partner, permissao, state: 'pendente',
+    criado_em: new Date().toISOString().slice(0,10),
+    submetido_em: null, result_versao: null,
+  });
+  p.historico.push({ data: new Date().toISOString().slice(0,10), evento: `✉️ Convite de ${permissao} enviado a ${partner}`, autor: 'Utilizador DAPL' });
+  toast(`Convite enviado a ${partner}`, 'success');
+  app.rerender();
+}
+
+function submeterAprovacao(planoId) {
+  const p = getPlano(planoId);
+  if (!p) return;
+  if (!p.versoes.length) { toast('Sem versão para aprovar', 'error'); return; }
+  // Sincroniza linhas de aprovação
+  const proponentes = [p.area_proponente, ...(p.co_proponentes || [])].filter(Boolean);
+  if (!proponentes.length) { toast('Defina proponentes primeiro', 'error'); return; }
+  p.approvals = proponentes.map((cid, i) => ({
+    company_id: cid, is_lead: i === 0, state: 'pendente',
+    approver: null, approved_at: null, notes: '',
+  }));
+  p.state = 'em_aprovacao';
+  p.historico.push({ data: new Date().toISOString().slice(0,10), evento: `🗳️ Submetido a aprovação · ${proponentes.length} proponentes`, autor: 'Utilizador DAPL' });
+  toast(`Submetido · aguarda ${proponentes.length} aprovações`, 'success');
+  app.rerender();
+}
+
+function devolverRedacao(planoId) {
+  const p = getPlano(planoId);
+  if (!p) return;
+  p.approvals.forEach(a => { a.state = 'pendente'; a.approver = null; a.approved_at = null; });
+  p.state = 'em_redacao';
+  p.historico.push({ data: new Date().toISOString().slice(0,10), evento: '↩️ Devolvido à redação · aprovações invalidadas', autor: 'Utilizador DAPL' });
+  toast('Devolvido à redação', 'success');
+  app.rerender();
+}
+
+function aprovar(planoId, idx) {
+  const p = getPlano(planoId);
+  if (!p) return;
+  const a = p.approvals[idx];
+  if (a.state !== 'pendente') { toast('Já tratado', 'error'); return; }
+  const notes = prompt('Notas / reservas (opcional):', '') || '';
+  a.state = 'aprovado';
+  a.approver = 'Utilizador DAPL';
+  a.approved_at = new Date().toISOString().slice(0,16).replace('T',' ');
+  a.notes = notes;
+  p.historico.push({ data: new Date().toISOString().slice(0,10), evento: `✓ Aprovação ${getArea(a.company_id)?.sigla}`, autor: 'Utilizador DAPL' });
+  // Verificar se todos aprovaram
+  const todos = p.approvals.every(x => x.state === 'aprovado');
+  if (todos) {
+    p.state = 'aprovado';
+    p.historico.push({ data: new Date().toISOString().slice(0,10), evento: '✅ Todos aprovaram · plano em estado APROVADO', autor: 'Sistema' });
+    toast(`${getArea(a.company_id)?.sigla} aprovou · TODOS aprovaram → estado APROVADO`, 'success');
+  } else {
+    const aprovs = p.approvals.filter(x => x.state === 'aprovado').length;
+    toast(`${getArea(a.company_id)?.sigla} aprovou (${aprovs}/${p.approvals.length})`, 'success');
+  }
+  app.rerender();
+}
+
+function rejeitar(planoId, idx) {
+  const p = getPlano(planoId);
+  if (!p) return;
+  const a = p.approvals[idx];
+  const motivo = prompt('Motivo da rejeição (obrigatório):');
+  if (!motivo || !motivo.trim()) { toast('Motivo obrigatório', 'error'); return; }
+  a.state = 'rejeitado';
+  a.approver = 'Utilizador DAPL';
+  a.notes = motivo;
+  // Outras aprovações voltam a pendente; estado vai para em_redacao
+  p.approvals.forEach(x => { if (x !== a && x.state === 'aprovado') { x.state = 'pendente'; x.approver = null; }});
+  p.state = 'em_redacao';
+  p.historico.push({ data: new Date().toISOString().slice(0,10), evento: `✗ Rejeição ${getArea(a.company_id)?.sigla} · ${motivo}`, autor: 'Utilizador DAPL' });
+  toast(`Rejeitado · plano devolvido à redação`, 'error');
+  app.rerender();
+}
+
+function enviarPublicacao(planoId) {
+  const p = getPlano(planoId);
+  if (!p) return;
+  p.state = 'publicado';
+  p.versoes.push({
+    numero: 'v1.0-final', tipo: 'aprovada',
+    data: new Date().toISOString().slice(0,10),
+    autor: 'Sistema', track_changes: 0,
+    summary: 'Versão final assinada e submetida ao DRE',
+  });
+  p.historico.push({ data: new Date().toISOString().slice(0,10), evento: '📤 Submetido ao DRE para publicação', autor: 'Utilizador DAPL' });
+  toast('Submetido ao DRE', 'success');
+  app.rerender();
+}
+
+function navegarPlano(delta) {
+  const parts = location.hash.replace(/^#\//,'').split('/').filter(Boolean);
+  if (parts[0] !== 'plano' || parts.length < 4) return;
+  const id = parts.slice(1, 4).join('/');
+  const tab = parts[4] || 'visao';
+  const idx = PLANOS.findIndex(p => p.id === id);
+  if (idx === -1) return;
+  const novoIdx = (idx + delta + PLANOS.length) % PLANOS.length;
+  location.hash = `#/plano/${PLANOS[novoIdx].id}/${tab}`;
+}
+
+// ============ Vista DSAAG ============
+function varrerDR() {
+  toast('🔍 A varrer Diário da República...');
+  setTimeout(() => {
+    const ja = new Set(DIPLOMAS_VARRIDOS.map(d => d.id));
+    const semPlano = DIPLOMAS.filter(d => d.estado === 'Publicado' && !d.tem_plano_regulamentacao && !ja.has(d.id));
+    if (!semPlano.length) {
+      toast('Sem novos diplomas. 🎉', 'success');
+    } else {
+      DIPLOMAS_VARRIDOS = [...DIPLOMAS_VARRIDOS, ...semPlano];
+      toast(`Detetados ${semPlano.length} novos diplomas`, 'success');
+      app.rerender();
+    }
+  }, 800);
+}
+
+function dsaagAceitar(diplomaId) {
+  DIPLOMAS_VARRIDOS = DIPLOMAS_VARRIDOS.filter(d => d.id !== diplomaId);
+  // Pré-popular wizard e ir
+  wizardState = {
+    diploma_habilitante: diplomaId, origem_diploma: 'publicado',
+    tipo_origem: 'dsaag_manual', titulo: '', correr_ia: true,
+  };
+  toast('Diploma aceite · IA será disparada...', 'success');
+  setTimeout(() => location.hash = '#/plano/novo', 500);
+}
+
+function dsaagAtribuir(diplomaId) {
+  const d = getDiploma(diplomaId);
+  if (!d) return;
+  DIPLOMAS_VARRIDOS = DIPLOMAS_VARRIDOS.filter(x => x.id !== diplomaId);
+  const next = String(PLANOS.length + 1).padStart(5, '0');
+  const novoId = `REG-${next}/XXIV/2026`;
+  const novoPlano = {
+    id: novoId, titulo: `Regulamentação de ${d.id}`,
+    tipo_origem: 'dsaag_manual', diploma_habilitante: d.id,
+    state: 'proposto', ai_status: 'em_curso', ai_provider: 'mock',
+    ai_confianca: 0, ai_summary: '',
+    objeto: '(a preencher pela IA...)',
+    forma_ato_prevista: 'portaria',
+    prazo_legal_dias: d.prazo_legal_dias,
+    prazo_data: d.data_publicacao ? new Date(new Date(d.data_publicacao).getTime() + d.prazo_legal_dias * 86400000).toISOString().slice(0,10) : null,
+    area_proponente: d.proponente,
+    co_proponentes: [], adjunto_responsavel: null,
+    entidades_externas: [], normas: [], approvals: [], versoes: [], edit_invitations: [],
+    document_html: '',
+    historico: [
+      { data: new Date().toISOString().slice(0,10), evento: 'Plano criado pela DSAAG · proponente atribuído', autor: 'Utilizador DAPL (DSAAG)' },
+    ],
+    risco: 'low', aguarda_proponente: false,
+  };
+  PLANOS.push(novoPlano);
+  // Simular IA
+  setTimeout(() => {
+    const result = mockAIAnalysis(d.id);
+    Object.assign(novoPlano, {
+      ai_status: 'concluida', ai_confianca: result.confianca_global,
+      ai_summary: result.raciocinio,
+      objeto: result.objeto, objeto_origem_ia: true,
+      forma_ato_prevista: result.forma_ato_sugerida, forma_ato_origem_ia: true,
+      prazo_legal_dias: result.prazo_legal_dias, prazo_origem_ia: true,
+      normas: result.normas_habilitantes,
+    });
+    novoPlano.historico.push({ data: new Date().toISOString().slice(0,10), evento: `🤖 IA concluída (${(result.confianca_global*100).toFixed(0)}%)`, autor: 'Sistema' });
+    app.rerender();
+  }, 1500);
+  toast(`Plano ${novoId} criado · ${getArea(d.proponente)?.sigla} notificado`, 'success');
+  app.rerender();
+}
+
+function dsaagDispensar(diplomaId) {
+  DIPLOMAS_VARRIDOS = DIPLOMAS_VARRIDOS.filter(d => d.id !== diplomaId);
+  toast('Dispensa registada (mock)');
+  app.rerender();
+}
+
+function tratarAlerta(alertId) {
+  const a = ALERTAS.find(x => x.id === alertId);
+  if (!a) return;
+  a.tratado_em = new Date().toISOString().slice(0,16).replace('T',' ');
+  a.tratado_por = 'Utilizador DAPL (DSAAG)';
+  a.acao_tomada = 'criar_plano';
+  toast('Alerta tratado');
+  app.rerender();
+}
+
+function atribuirProponente(planoId) {
+  const p = getPlano(planoId);
+  if (!p) return;
+  const sigla = prompt('Sigla da área proponente (ex.: METD, MAAC, MP):', 'MP');
+  if (!sigla) return;
+  const area = AREAS_GOVERNATIVAS.find(a => a.sigla.toLowerCase() === sigla.toLowerCase());
+  if (!area) { toast('Não encontrado', 'error'); return; }
+  p.area_proponente = area.id;
+  p.aguarda_proponente = false;
+  p.adjunto_responsavel = `Adjunto ${area.sigla}`;
+  p.historico.push({ data: new Date().toISOString().slice(0,10), evento: `Proponente atribuído: ${area.nome}`, autor: 'Utilizador DAPL (DSAAG)' });
+  toast(`${area.sigla} atribuído`, 'success');
+  app.rerender();
+}
+
+</script>
+</body>
+</html>
