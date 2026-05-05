@@ -912,6 +912,110 @@ hr { border: 0; border-top: 1px solid var(--sl-border); margin: 8px 0; }
   transition: width 0.3s ease;
 }
 
+/* ============ Login ============ */
+.sl-login-bg {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f9f9f9 0%, #e8e9f4 100%);
+  display: flex; align-items: center; justify-content: center;
+  padding: 24px;
+}
+.sl-login-card {
+  background: var(--sl-bg-card);
+  border-radius: 8px;
+  box-shadow: 0 12px 32px -8px rgba(0,0,0,0.18);
+  padding: 32px 36px;
+  max-width: 720px; width: 100%;
+}
+.sl-login-brand {
+  display: flex; align-items: center; gap: 12px;
+  margin-bottom: 8px;
+}
+.sl-login-brand-mark {
+  width: 36px; height: 36px;
+  background: linear-gradient(135deg, var(--sl-primary) 0%, var(--sl-primary) 50%, var(--sl-secondary) 50%, var(--sl-secondary) 100%);
+  flex-shrink: 0;
+}
+.sl-login-brand h1 {
+  margin: 0; font-size: var(--sl-fs-xl); color: var(--sl-secondary-dark); font-weight: 700;
+}
+.sl-login-brand small { color: var(--sl-text-soft); font-size: var(--sl-fs-sm); }
+.sl-login-card h2 {
+  font-size: var(--sl-fs-md); color: var(--sl-text); margin: 24px 0 8px; font-weight: 600;
+}
+.sl-login-card .lead { color: var(--sl-text-muted); font-size: var(--sl-fs-sm); margin: 0 0 16px; }
+.sl-login-perfis { display: grid; gap: 8px; }
+.sl-login-perfil {
+  display: flex; align-items: center; gap: 14px;
+  background: var(--sl-bg-card);
+  border: 1px solid var(--sl-border);
+  border-radius: var(--sl-radius-sm);
+  padding: 10px 14px;
+  cursor: pointer; text-align: left; font-family: inherit;
+  transition: all 0.15s ease;
+}
+.sl-login-perfil:hover {
+  border-color: var(--sl-primary);
+  background: var(--sl-bg-sheet);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px -2px rgba(0,0,0,0.08);
+}
+.sl-login-avatar {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+  color: white; font-weight: 700; font-size: 13px;
+  flex-shrink: 0;
+}
+.sl-login-info { flex: 1; min-width: 0; }
+.sl-login-info strong { display: block; font-size: var(--sl-fs-base); color: var(--sl-text-strong); }
+.sl-login-info span {
+  display: block; font-size: 11px; color: var(--sl-text-muted);
+  text-transform: uppercase; letter-spacing: 0.5px;
+}
+.sl-login-info em {
+  display: block; font-size: var(--sl-fs-sm); color: var(--sl-text);
+  font-style: normal; margin-top: 2px;
+}
+.sl-login-footer {
+  margin-top: 20px; padding-top: 16px;
+  border-top: 1px solid var(--sl-border-light);
+  font-size: 11px; color: var(--sl-text-muted);
+  text-align: center;
+}
+
+/* User dropdown menu (topbar) */
+.sl-user-menu {
+  position: absolute;
+  right: 12px; top: var(--sl-navbar-h);
+  background: var(--sl-bg-card);
+  border: 1px solid var(--sl-border);
+  border-radius: var(--sl-radius-sm);
+  box-shadow: var(--sl-shadow-dropdown);
+  min-width: 220px; padding: 6px 0;
+  display: none; z-index: 60;
+}
+.sl-user-menu.is-open { display: block; }
+.sl-user-menu__role {
+  padding: 8px 16px 4px;
+  font-size: 11px; color: var(--sl-text-muted);
+  text-transform: uppercase; letter-spacing: 0.5px;
+}
+.sl-user-menu__name { padding: 0 16px 8px; font-weight: 600; }
+.sl-user-menu__divider { height: 1px; background: var(--sl-border-light); margin: 4px 0; }
+.sl-user-menu__item {
+  display: block; padding: 8px 16px;
+  color: var(--sl-text); font-size: 13px;
+  cursor: pointer; text-decoration: none;
+  border: 0; background: none; width: 100%; text-align: left;
+}
+.sl-user-menu__item:hover { background: var(--sl-bg-sheet); }
+
+/* Editable IA hint */
+.sl-ia-edit-hint {
+  display: inline-block; margin-left: 8px;
+  font-size: 10px; color: var(--sl-primary); font-style: italic;
+}
+
 @media (max-width: 900px) {
   .sl-grid-2 { grid-template-columns: 1fr; }
   .sl-form__row, .sl-form__row--3, .sl-form__row--4 { grid-template-columns: 1fr; }
@@ -922,7 +1026,7 @@ hr { border: 0; border-top: 1px solid var(--sl-border); margin: 8px 0; }
 </head>
 <body>
   <!-- ============ Topbar ============ -->
-  <header class="sl-navbar">
+  <header class="sl-navbar" id="topbar">
     <div class="sl-navbar__logo" id="logoToggle" title="Aplicações">
       <div class="sl-navbar__logo-mark"></div>
       <span class="sl-navbar__brand">SMARTLEGIS</span>
@@ -940,9 +1044,15 @@ hr { border: 0; border-top: 1px solid var(--sl-border); margin: 8px 0; }
       <button class="sl-navbar__icon-btn" title="Mensagens">
         💬<span class="sl-navbar__badge">12</span>
       </button>
-      <div class="sl-navbar__user">
-        <span class="sl-navbar__user-avatar">UD</span>
-        <span>Utilizador DAPL ▼</span>
+      <div class="sl-navbar__user" id="userPill" onclick="toggleUserMenu(event)" style="cursor:pointer">
+        <span class="sl-navbar__user-avatar" id="userAvatar" style="background:var(--sl-primary)">UD</span>
+        <span id="userName">Utilizador ▼</span>
+      </div>
+      <div class="sl-user-menu" id="userMenu">
+        <div class="sl-user-menu__role" id="userMenuRole"></div>
+        <div class="sl-user-menu__name" id="userMenuName"></div>
+        <div class="sl-user-menu__divider"></div>
+        <button class="sl-user-menu__item" onclick="logout()">⏻ Sair / Trocar de perfil</button>
       </div>
     </div>
 
@@ -1265,7 +1375,115 @@ const ALERTAS = [
 
 let DIPLOMAS_VARRIDOS = [];
 
+// ============ Perfis de utilizador (mock auth) ============
+// Reflete os 5 papéis institucionais previstos na especificação:
+// - DAPL: QA/Admin · acesso integral · submete versões finais ao DRE
+// - DSAAG: vigilância · trata fila de deteção · alertas · valida análise IA F2 · NÃO redige
+// - Gabinete proponente: redige e aprova regulamentação na sua área
+// - Co-proponente: edita e aprova nos planos onde é co-proponente
+// - Ator externo: edita via magic link
+const PERFIS = [
+  {
+    id: 'dapl-bv', nome: 'Bernardo Vidal', role: 'Chefe de Divisão',
+    role_id: 'dapl', gabinete: 'DAPL', avatar: 'BV', cor: '#3A529C',
+    missao: 'QA / Admin · acesso integral · submete versões finais ao DRE',
+  },
+  {
+    id: 'dsaag-tp', nome: 'Tânia Parreira', role: 'Diretora de Serviços',
+    role_id: 'dsaag', gabinete: 'DSAAG', avatar: 'TP', cor: '#F2784B',
+    missao: 'Vigilância · trata fila de deteção · alertas · valida análise IA F2 · não redige',
+  },
+  {
+    id: 'metd-rs', nome: 'Rita Silva', role: 'Adjunta · METD',
+    role_id: 'gabinete', gabinete_id: 'metd', avatar: 'RS', cor: '#8B4513',
+    missao: 'Gabinete proponente · redige e aprova regulamentação',
+  },
+  {
+    id: 'mp-sl', nome: 'Sofia Lima', role: 'Adjunta · MP',
+    role_id: 'co_proponente', gabinete_id: 'mp', avatar: 'SL', cor: '#5F9EA0',
+    missao: 'Co-proponente · edita e aprova planos onde MP é co-proponente',
+  },
+  {
+    id: 'cnpd-mm', nome: 'Maria Mendes', role: 'Técnica · CNPD',
+    role_id: 'externo', gabinete_id: 'cnpd', avatar: 'MM', cor: '#9370DB',
+    missao: 'Ator externo · edita via magic link em planos onde foi convidada',
+  },
+  {
+    id: 'demo', nome: 'Demonstração', role: 'Sem restrições',
+    role_id: 'demo', avatar: 'DM', cor: '#36D7B7',
+    missao: 'Acesso integral sem restrições · útil para apresentações',
+  },
+];
+
+// Estado de auth global
+let currentUser = null;
+
+// Permissões consolidadas
+function userCan(action, plan) {
+  if (!currentUser) return false;
+  const r = currentUser.role_id;
+  if (r === 'demo') return true;
+
+  switch (action) {
+    case 'view_all':
+      return ['dapl', 'dsaag'].includes(r);
+    case 'criar_plano_via_diploma':
+      return ['dapl', 'gabinete'].includes(r);
+    case 'gerir_dsaag':
+      return ['dapl', 'dsaag'].includes(r);
+    case 'validar_ia':
+      if (!plan) return ['dapl', 'dsaag', 'gabinete'].includes(r);
+      if (r === 'dapl') return true;
+      if (r === 'dsaag') return plan.tipo_origem !== 'proponente_via_diploma';
+      if (r === 'gabinete') return plan.tipo_origem === 'proponente_via_diploma'
+        && plan.area_proponente === currentUser.gabinete_id;
+      return false;
+    case 'redigir_documento':
+      if (!plan) return ['gabinete', 'co_proponente', 'externo'].includes(r);
+      if (r === 'gabinete') return plan.area_proponente === currentUser.gabinete_id;
+      if (r === 'co_proponente') return plan.co_proponentes?.includes(currentUser.gabinete_id);
+      if (r === 'externo') return plan.edit_invitations?.some(i => i.partner.includes(currentUser.gabinete_id?.toUpperCase() || ''));
+      return false;
+    case 'convidar_externo':
+    case 'submeter_aprovacao':
+    case 'devolver':
+      if (!plan) return ['gabinete', 'co_proponente'].includes(r);
+      if (r === 'gabinete') return plan.area_proponente === currentUser.gabinete_id;
+      if (r === 'co_proponente') return plan.co_proponentes?.includes(currentUser.gabinete_id);
+      return false;
+    case 'aprovar':
+      if (!plan) return ['gabinete', 'co_proponente'].includes(r);
+      if (r === 'gabinete') return plan.area_proponente === currentUser.gabinete_id;
+      if (r === 'co_proponente') return plan.co_proponentes?.includes(currentUser.gabinete_id);
+      return false;
+    case 'submeter_dre':
+      return r === 'dapl';
+    case 'qa':
+      return r === 'dapl';
+    default:
+      return false;
+  }
+}
+
+// Filtra planos visíveis para o utilizador atual
+function planosVisiveis() {
+  if (!currentUser) return [];
+  const r = currentUser.role_id;
+  if (['dapl', 'dsaag', 'demo'].includes(r)) return PLANOS;
+  if (r === 'gabinete') {
+    return PLANOS.filter(p => p.area_proponente === currentUser.gabinete_id);
+  }
+  if (r === 'co_proponente') {
+    return PLANOS.filter(p => p.co_proponentes?.includes(currentUser.gabinete_id));
+  }
+  if (r === 'externo') {
+    return PLANOS.filter(p => p.edit_invitations?.length); // simplificação para o mock
+  }
+  return [];
+}
+
 // Helpers
+function getPerfil(id) { return PERFIS.find(p => p.id === id) || null; }
 function getArea(id) { return AREAS_GOVERNATIVAS.find(a => a.id === id) || null; }
 function getEntidade(id) { return ENTIDADES_EXTERNAS.find(e => e.id === id) || null; }
 function getDiploma(id) { return DIPLOMAS.find(d => d.id === id) || null; }
@@ -1395,49 +1613,67 @@ function renderSection(title, content, opts={}) {
   `;
 }
 
-// ============ Dashboard ============
+// ============ Login ============
+function viewLogin() {
+  return `
+    <div class="sl-login-bg">
+      <div class="sl-login-card">
+        <div class="sl-login-brand">
+          <div class="sl-login-brand-mark"></div>
+          <div>
+            <h1>SmartLegis</h1>
+            <small>Módulo de Regulamentação · DAPL.2026.01</small>
+          </div>
+        </div>
+        <h2>Iniciar sessão</h2>
+        <p class="lead">Selecione um perfil. Cada perfil reflete o papel institucional previsto na especificação — com permissões, vistas e ações coerentes.</p>
+        <div class="sl-login-perfis">
+          ${PERFIS.map(p => `
+            <button class="sl-login-perfil" onclick="login('${p.id}')">
+              <span class="sl-login-avatar" style="background:${p.cor}">${p.avatar}</span>
+              <div class="sl-login-info">
+                <strong>${p.nome}</strong>
+                <span>${p.role}${p.gabinete ? ' · ' + p.gabinete : ''}</span>
+                <em>${p.missao}</em>
+              </div>
+            </button>
+          `).join('')}
+        </div>
+        <div class="sl-login-footer">
+          Mock institucional · DAPL · Secretaria-Geral do Governo
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// ============ Dashboard (simplificado) ============
 function viewDashboard() {
-  const ativos = PLANOS.filter(p => !['publicado','dispensado','cancelado'].includes(p.state)).length;
-  const iaPendente = PLANOS.filter(p => p.state === 'proposto' && p.ai_status === 'concluida').length;
-  const emAprovacao = PLANOS.filter(p => p.state === 'em_aprovacao').length;
-  const semProponente = PLANOS.filter(p => p.aguarda_proponente).length;
+  const visiveis = planosVisiveis();
+  const total = visiveis.length;
+  const emCurso = visiveis.filter(p => !['publicado','dispensado','cancelado'].includes(p.state)).length;
+  const podeCriarPlano = userCan('criar_plano_via_diploma');
 
   return `
     ${renderControlPanel({
       breadcrumb: 'Dashboard',
-      buttons: `<a href="#/plano/novo" class="sl-btn sl-btn--primary">Criar</a>`,
+      buttons: podeCriarPlano ? `<a href="#/plano/novo" class="sl-btn sl-btn--primary">Criar</a>` : '',
     })}
 
-    <div class="sl-card-grid">
-      <div class="sl-card">
-        <div class="sl-card__number">${PLANOS.filter(p=>p.state!=='publicado').length}</div>
-        <h2 class="sl-card__title">MEUS PLANOS</h2>
-        <hr>
-        <a href="#/planos" class="sl-btn sl-btn--secondary">Ver Todos</a>
-      </div>
-      <div class="sl-card">
-        <div class="sl-card__number">${PLANOS.length}</div>
-        <h2 class="sl-card__title">REGULAMENTAÇÃO</h2>
-        <hr>
-        <a href="#/planos" class="sl-btn sl-btn--secondary">Ver Todos</a>
-      </div>
-      <div class="sl-card">
-        <div class="sl-card__number">${iaPendente}</div>
-        <h2 class="sl-card__title" style="font-size:13px">🤖 IA POR VALIDAR</h2>
-        <hr>
-        <a href="#/dsaag" class="sl-btn sl-btn--secondary">Ver Todos</a>
-      </div>
-      <div class="sl-card">
-        <div class="sl-card__number">${emAprovacao}</div>
-        <h2 class="sl-card__title" style="font-size:13px">EM APROVAÇÃO</h2>
-        <hr>
-        <a href="#/planos" class="sl-btn sl-btn--secondary">Ver Todos</a>
-      </div>
-      <div class="sl-card">
-        <div class="sl-card__number">${semProponente}</div>
-        <h2 class="sl-card__title" style="font-size:13px">SEM PROPONENTE</h2>
-        <hr>
-        <a href="#/dsaag" class="sl-btn sl-btn--secondary">Ver Todos</a>
+    <div style="max-width:760px; margin:24px auto; padding:0 24px">
+      <div style="display:grid; grid-template-columns:repeat(2,1fr); gap:16px;">
+        <div class="sl-card" onclick="location.hash='#/planos'" style="cursor:pointer">
+          <div class="sl-card__number">${total}</div>
+          <h2 class="sl-card__title">PLANOS</h2>
+          <hr>
+          <span class="sl-btn sl-btn--secondary">Ver todos</span>
+        </div>
+        <div class="sl-card" onclick="location.hash='#/planos'" style="cursor:pointer">
+          <div class="sl-card__number">${emCurso}</div>
+          <h2 class="sl-card__title" style="font-size:15px;">REGULAMENTAÇÃO EM CURSO</h2>
+          <hr>
+          <span class="sl-btn sl-btn--secondary">Ver em curso</span>
+        </div>
       </div>
     </div>
 
@@ -1448,8 +1684,9 @@ function viewDashboard() {
             <th>Número</th><th>Título</th><th>IA</th><th>Estado</th><th>Aprovações</th><th>Prazo</th>
           </tr></thead>
           <tbody>
-            ${PLANOS.map(p => {
-              const total = p.approvals?.length || 0;
+            ${visiveis.length === 0 ? `<tr><td colspan="6" style="text-align:center;padding:24px;color:var(--sl-text-muted)"><em>Sem planos visíveis para este perfil.</em></td></tr>` :
+            visiveis.map(p => {
+              const tot = p.approvals?.length || 0;
               const aprovs = p.approvals?.filter(a => a.state === 'aprovado').length || 0;
               return `
                 <tr onclick="location.hash='#/plano/${p.id}'">
@@ -1457,7 +1694,7 @@ function viewDashboard() {
                   <td>${escapeHtml(p.titulo)}</td>
                   <td>${pillAI(p.ai_status)}</td>
                   <td>${pillEstado(p.state)}</td>
-                  <td>${total ? `${aprovs}/${total}` : '—'}</td>
+                  <td>${tot ? `${aprovs}/${tot}` : '—'}</td>
                   <td>${riskDot(p.risco)} ${fmtDays(diasAteData(p.prazo_data))}</td>
                 </tr>
               `;
@@ -1480,7 +1717,7 @@ function viewPlanos() {
         <button class="sl-filter-pill">▼ Filtros</button>
         <button class="sl-filter-pill">≡ Agrupar por</button>
       `,
-      pager: `<div class="sl-pager"><span>1-${PLANOS.length} / ${PLANOS.length}</span><button class="sl-pager__nav">‹</button><button class="sl-pager__nav">›</button></div>`,
+      pager: `<div class="sl-pager"><span>1-${planosVisiveis().length} / ${planosVisiveis().length}</span><button class="sl-pager__nav">‹</button><button class="sl-pager__nav">›</button></div>`,
     })}
     <div style="padding:0">
       <div class="sl-table-wrap" style="border-radius:0;border-left:0;border-right:0">
@@ -1491,7 +1728,8 @@ function viewPlanos() {
             <th>Forma de ato</th><th>Estado</th><th>Aprov.</th><th>Prazo</th>
           </tr></thead>
           <tbody>
-            ${PLANOS.map(p => {
+            ${planosVisiveis().length === 0 ? `<tr><td colspan="10" style="text-align:center;padding:24px;color:var(--sl-text-muted)"><em>Sem planos visíveis para este perfil.</em></td></tr>` :
+            planosVisiveis().map(p => {
               const a = getArea(p.area_proponente);
               const total = p.approvals?.length || 0;
               const aprovs = p.approvals?.filter(x => x.state === 'aprovado').length || 0;
@@ -1543,23 +1781,30 @@ function viewPlanoDetalhe(planoId, tab='dados') {
     default: tabBody = renderTabDados(p, dipl, area);
   }
 
-  // Botão principal contextual
+  // Botão principal contextual (filtrado por permissão)
+  const podeValidarIA = userCan('validar_ia', p);
+  const podeRedigir = userCan('redigir_documento', p);
+  const podeSubmeterAprovacao = userCan('submeter_aprovacao', p);
+  const podeDevolver = userCan('devolver', p);
+  const podeSubmeterDre = userCan('submeter_dre', p);
+  const podeAtribuir = userCan('gerir_dsaag', p);
   let actionButtons = '';
   if (p.state === 'proposto') {
-    if (p.ai_status === 'concluida' || p.ai_status === 'falhou') {
-      actionButtons = `<button class="sl-btn sl-btn--primary" onclick="validarIA('${p.id}')">Validar IA</button>`;
-    } else {
-      actionButtons = `<button class="sl-btn sl-btn--secondary" onclick="rerunIA('${p.id}')">Re-correr IA</button>`;
+    if (p.aguarda_proponente && podeAtribuir) {
+      actionButtons += `<button class="sl-btn sl-btn--primary" onclick="atribuirProponente('${p.id}')">Atribuir Proponente</button>`;
     }
-    if (p.aguarda_proponente) {
-      actionButtons = `<button class="sl-btn sl-btn--primary" onclick="atribuirProponente('${p.id}')">Atribuir Proponente</button>` + actionButtons;
+    if (podeValidarIA) {
+      if (p.ai_status === 'concluida' || p.ai_status === 'falhou') {
+        actionButtons += `<button class="sl-btn sl-btn--primary" onclick="validarIA('${p.id}')">Validar IA</button>`;
+      }
+      actionButtons += `<button class="sl-btn sl-btn--secondary" onclick="rerunIA('${p.id}')">Re-correr IA</button>`;
     }
-  } else if (p.state === 'em_redacao') {
+  } else if (p.state === 'em_redacao' && podeSubmeterAprovacao) {
     actionButtons = `<button class="sl-btn sl-btn--primary" onclick="submeterAprovacao('${p.id}')">Submeter à Aprovação</button>`;
-  } else if (p.state === 'em_aprovacao') {
+  } else if (p.state === 'em_aprovacao' && podeDevolver) {
     actionButtons = `<button class="sl-btn sl-btn--secondary" onclick="devolverRedacao('${p.id}')">Devolver</button>`;
-  } else if (p.state === 'aprovado') {
-    actionButtons = `<button class="sl-btn sl-btn--primary" onclick="enviarPublicacao('${p.id}')">Enviar para Publicação</button>`;
+  } else if (p.state === 'aprovado' && podeSubmeterDre) {
+    actionButtons = `<button class="sl-btn sl-btn--primary" onclick="enviarPublicacao('${p.id}')">Enviar para Publicação (DAPL)</button>`;
   }
 
   // Banner contextual
@@ -1637,6 +1882,17 @@ function viewPlanoDetalhe(planoId, tab='dados') {
 }
 
 function renderTabDados(p, dipl, area) {
+  // Edição inline dos campos pré-preenchidos pela IA (apenas em estado proposto, com permissão)
+  const editavel = p.state === 'proposto' && userCan('validar_ia', p);
+  const editHint = editavel ? `<span class="sl-ia-edit-hint">(editável até validação)</span>` : '';
+
+  // Helper para mostrar input ou valor read-only
+  const inputOrValue = (val, field, type='text', isLong=false) => {
+    if (!editavel) return `<div class="sl-form__value">${escapeHtml(val)}</div>`;
+    if (isLong) return `<textarea class="sl-form__textarea" onchange="updatePlanField('${p.id}','${field}',this.value)">${escapeHtml(val)}</textarea>`;
+    return `<input type="${type}" class="sl-form__input" value="${escapeHtml(String(val))}" onchange="updatePlanField('${p.id}','${field}',this.value)">`;
+  };
+
   return `
     <div class="sl-form__row">
       <div class="sl-form__field">
@@ -1645,7 +1901,7 @@ function renderTabDados(p, dipl, area) {
       </div>
       <div class="sl-form__field">
         <label class="sl-form__label sl-form__label--required">Título</label>
-        <div class="sl-form__value">${escapeHtml(p.titulo)}</div>
+        ${inputOrValue(p.titulo, 'titulo')}
       </div>
     </div>
     <div class="sl-form__row">
@@ -1660,12 +1916,16 @@ function renderTabDados(p, dipl, area) {
     </div>
     <div class="sl-form__row">
       <div class="sl-form__field">
-        <label class="sl-form__label sl-form__label--required">Forma de Ato Prevista</label>
-        <div class="sl-form__value">${getFormaAtoLabel(p.forma_ato_prevista)}${p.forma_ato_origem_ia && p.ai_status !== 'validada' ? badgeIA() : ''}</div>
+        <label class="sl-form__label sl-form__label--required">Forma de Ato Prevista${p.forma_ato_origem_ia && p.ai_status !== 'validada' ? badgeIA() : ''}${editHint}</label>
+        ${editavel ? `
+          <select class="sl-form__select" onchange="updatePlanField('${p.id}','forma_ato_prevista',this.value)">
+            ${FORMAS_ATO.map(([v,l]) => `<option value="${v}" ${p.forma_ato_prevista === v ? 'selected' : ''}>${l}</option>`).join('')}
+          </select>
+        ` : `<div class="sl-form__value">${getFormaAtoLabel(p.forma_ato_prevista)}</div>`}
       </div>
       <div class="sl-form__field">
-        <label class="sl-form__label">Prazo Legal</label>
-        <div class="sl-form__value">${p.prazo_legal_dias} dias${p.prazo_origem_ia && p.ai_status !== 'validada' ? badgeIA() : ''}</div>
+        <label class="sl-form__label">Prazo Legal (dias)${p.prazo_origem_ia && p.ai_status !== 'validada' ? badgeIA() : ''}${editHint}</label>
+        ${editavel ? `<input type="number" class="sl-form__input" value="${p.prazo_legal_dias}" min="1" max="730" onchange="updatePlanField('${p.id}','prazo_legal_dias',parseInt(this.value)||60)">` : `<div class="sl-form__value">${p.prazo_legal_dias} dias</div>`}
       </div>
     </div>
     <div class="sl-form__row">
@@ -1681,11 +1941,16 @@ function renderTabDados(p, dipl, area) {
     <div class="sl-form__row">
       <div class="sl-form__field">
         <label class="sl-form__label">Área Governativa Proponente</label>
-        <div class="sl-form__value">${area ? `<strong>${area.sigla}</strong> · ${area.nome}` : '<em class="sl-text-muted">não atribuída</em>'}</div>
+        ${editavel ? `
+          <select class="sl-form__select" onchange="updatePlanField('${p.id}','area_proponente',this.value)">
+            <option value="">— escolha —</option>
+            ${AREAS_GOVERNATIVAS.map(a => `<option value="${a.id}" ${p.area_proponente === a.id ? 'selected' : ''}>${a.sigla} · ${a.nome}</option>`).join('')}
+          </select>
+        ` : `<div class="sl-form__value">${area ? `<strong>${area.sigla}</strong> · ${area.nome}` : '<em class="sl-text-muted">não atribuída</em>'}</div>`}
       </div>
       <div class="sl-form__field">
         <label class="sl-form__label">Adjunto Responsável</label>
-        <div class="sl-form__value">${p.adjunto_responsavel || '—'}</div>
+        ${inputOrValue(p.adjunto_responsavel || '', 'adjunto_responsavel')}
       </div>
     </div>
     <div class="sl-form__row">
@@ -1696,8 +1961,8 @@ function renderTabDados(p, dipl, area) {
     </div>
     <div class="sl-form__row">
       <div class="sl-form__field sl-form__field--full">
-        <label class="sl-form__label sl-form__label--required">Objeto da Regulamentação${p.objeto_origem_ia && p.ai_status !== 'validada' ? badgeIA() : ''}</label>
-        <div class="sl-form__value" style="white-space:normal">${escapeHtml(p.objeto)}</div>
+        <label class="sl-form__label sl-form__label--required">Objeto da Regulamentação${p.objeto_origem_ia && p.ai_status !== 'validada' ? badgeIA() : ''}${editHint}</label>
+        ${inputOrValue(p.objeto || '', 'objeto', 'text', true)}
       </div>
     </div>
     <div class="sl-form__row">
@@ -2271,18 +2536,70 @@ document.addEventListener('click', () => {
 
 
 // === app.js ===
-// SmartLegis · Módulo de Regulamentação · Mock app v0.2 (routing + ações)
+// SmartLegis · Módulo de Regulamentação · Mock app v0.5 (auth + permissões + edição IA)
 
 const app = {
   current: null,
   rerender() { router(); },
 };
 
+// ============ Auth ============
+function loadAuth() {
+  const stored = sessionStorage.getItem('sl_user');
+  if (stored) {
+    try { currentUser = JSON.parse(stored); }
+    catch (e) { currentUser = null; }
+  }
+}
+function login(perfilId) {
+  const p = getPerfil(perfilId);
+  if (!p) return;
+  currentUser = p;
+  sessionStorage.setItem('sl_user', JSON.stringify(p));
+  if (location.hash === '#/dashboard') router();
+  else location.hash = '#/dashboard';
+}
+function logout() {
+  currentUser = null;
+  sessionStorage.removeItem('sl_user');
+  router();
+}
+function refreshUserPill() {
+  const avatar = document.getElementById('userAvatar');
+  const name = document.getElementById('userName');
+  const role = document.getElementById('userMenuRole');
+  const fullName = document.getElementById('userMenuName');
+  if (!avatar) return;
+  if (currentUser) {
+    avatar.textContent = currentUser.avatar;
+    avatar.style.background = currentUser.cor;
+    name.textContent = currentUser.nome + ' ▼';
+    if (role) role.textContent = currentUser.role + (currentUser.gabinete ? ' · ' + currentUser.gabinete : '');
+    if (fullName) fullName.textContent = currentUser.nome;
+  }
+}
+function toggleUserMenu(e) {
+  if (e) e.stopPropagation();
+  document.getElementById('userMenu').classList.toggle('is-open');
+}
+
 // ============ Routing ============
 function router() {
+  loadAuth();
+  const main = document.getElementById('main');
+  const topbar = document.getElementById('topbar');
+
+  // Route guard: sem auth → login screen
+  if (!currentUser) {
+    if (topbar) topbar.style.display = 'none';
+    main.innerHTML = viewLogin();
+    return;
+  }
+  if (topbar) topbar.style.display = '';
+  refreshUserPill();
+
   const hash = location.hash.replace(/^#\//, '') || 'dashboard';
   const parts = hash.split('/').filter(Boolean);
-  const main = document.getElementById('main');
   const breadcrumb = document.getElementById('breadcrumb');
 
   const route = parts[0];
@@ -2343,7 +2660,13 @@ window.addEventListener('DOMContentLoaded', () => {
       document.getElementById('sidebar').classList.toggle('is-open');
     });
   }
-  document.getElementById('alertsBtn').addEventListener('click', () => location.hash = '#/dsaag');
+  const ab = document.getElementById('alertsBtn');
+  if (ab) ab.addEventListener('click', () => location.hash = '#/dsaag');
+  // Fecha user menu ao clicar fora
+  document.addEventListener('click', () => {
+    const m = document.getElementById('userMenu');
+    if (m) m.classList.remove('is-open');
+  });
 });
 
 function refreshAlertCount() {
@@ -2358,6 +2681,24 @@ function toast(msg, type='') {
   t.textContent = msg;
   t.className = 'sl-toast is-open' + (type ? ` sl-toast--${type}` : '');
   setTimeout(() => { t.className = 'sl-toast'; }, 2400);
+}
+
+// Atualiza um campo de um plano (usado nos inputs editáveis da Análise IA)
+function updatePlanField(planId, field, value) {
+  const p = getPlano(planId);
+  if (!p) return;
+  p[field] = value;
+  // Limpa flag de origem IA quando humano edita
+  const flagMap = {
+    objeto: 'objeto_origem_ia',
+    forma_ato_prevista: 'forma_ato_origem_ia',
+    prazo_legal_dias: 'prazo_origem_ia',
+  };
+  if (flagMap[field]) p[flagMap[field]] = false;
+  // Recalcula prazo limite se mudou prazo legal
+  if (field === 'prazo_legal_dias' && p.data_publicacao_habilitante) {
+    p.prazo_data = new Date(new Date(p.data_publicacao_habilitante).getTime() + value * 86400000).toISOString().slice(0,10);
+  }
 }
 
 // Wizard navigation (3-step SmartLegis)

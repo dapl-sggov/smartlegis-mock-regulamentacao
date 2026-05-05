@@ -282,7 +282,115 @@ const ALERTAS = [
 
 let DIPLOMAS_VARRIDOS = [];
 
+// ============ Perfis de utilizador (mock auth) ============
+// Reflete os 5 papéis institucionais previstos na especificação:
+// - DAPL: QA/Admin · acesso integral · submete versões finais ao DRE
+// - DSAAG: vigilância · trata fila de deteção · alertas · valida análise IA F2 · NÃO redige
+// - Gabinete proponente: redige e aprova regulamentação na sua área
+// - Co-proponente: edita e aprova nos planos onde é co-proponente
+// - Ator externo: edita via magic link
+const PERFIS = [
+  {
+    id: 'dapl-bv', nome: 'Bernardo Vidal', role: 'Chefe de Divisão',
+    role_id: 'dapl', gabinete: 'DAPL', avatar: 'BV', cor: '#3A529C',
+    missao: 'QA / Admin · acesso integral · submete versões finais ao DRE',
+  },
+  {
+    id: 'dsaag-tp', nome: 'Tânia Parreira', role: 'Diretora de Serviços',
+    role_id: 'dsaag', gabinete: 'DSAAG', avatar: 'TP', cor: '#F2784B',
+    missao: 'Vigilância · trata fila de deteção · alertas · valida análise IA F2 · não redige',
+  },
+  {
+    id: 'metd-rs', nome: 'Rita Silva', role: 'Adjunta · METD',
+    role_id: 'gabinete', gabinete_id: 'metd', avatar: 'RS', cor: '#8B4513',
+    missao: 'Gabinete proponente · redige e aprova regulamentação',
+  },
+  {
+    id: 'mp-sl', nome: 'Sofia Lima', role: 'Adjunta · MP',
+    role_id: 'co_proponente', gabinete_id: 'mp', avatar: 'SL', cor: '#5F9EA0',
+    missao: 'Co-proponente · edita e aprova planos onde MP é co-proponente',
+  },
+  {
+    id: 'cnpd-mm', nome: 'Maria Mendes', role: 'Técnica · CNPD',
+    role_id: 'externo', gabinete_id: 'cnpd', avatar: 'MM', cor: '#9370DB',
+    missao: 'Ator externo · edita via magic link em planos onde foi convidada',
+  },
+  {
+    id: 'demo', nome: 'Demonstração', role: 'Sem restrições',
+    role_id: 'demo', avatar: 'DM', cor: '#36D7B7',
+    missao: 'Acesso integral sem restrições · útil para apresentações',
+  },
+];
+
+// Estado de auth global
+let currentUser = null;
+
+// Permissões consolidadas
+function userCan(action, plan) {
+  if (!currentUser) return false;
+  const r = currentUser.role_id;
+  if (r === 'demo') return true;
+
+  switch (action) {
+    case 'view_all':
+      return ['dapl', 'dsaag'].includes(r);
+    case 'criar_plano_via_diploma':
+      return ['dapl', 'gabinete'].includes(r);
+    case 'gerir_dsaag':
+      return ['dapl', 'dsaag'].includes(r);
+    case 'validar_ia':
+      if (!plan) return ['dapl', 'dsaag', 'gabinete'].includes(r);
+      if (r === 'dapl') return true;
+      if (r === 'dsaag') return plan.tipo_origem !== 'proponente_via_diploma';
+      if (r === 'gabinete') return plan.tipo_origem === 'proponente_via_diploma'
+        && plan.area_proponente === currentUser.gabinete_id;
+      return false;
+    case 'redigir_documento':
+      if (!plan) return ['gabinete', 'co_proponente', 'externo'].includes(r);
+      if (r === 'gabinete') return plan.area_proponente === currentUser.gabinete_id;
+      if (r === 'co_proponente') return plan.co_proponentes?.includes(currentUser.gabinete_id);
+      if (r === 'externo') return plan.edit_invitations?.some(i => i.partner.includes(currentUser.gabinete_id?.toUpperCase() || ''));
+      return false;
+    case 'convidar_externo':
+    case 'submeter_aprovacao':
+    case 'devolver':
+      if (!plan) return ['gabinete', 'co_proponente'].includes(r);
+      if (r === 'gabinete') return plan.area_proponente === currentUser.gabinete_id;
+      if (r === 'co_proponente') return plan.co_proponentes?.includes(currentUser.gabinete_id);
+      return false;
+    case 'aprovar':
+      if (!plan) return ['gabinete', 'co_proponente'].includes(r);
+      if (r === 'gabinete') return plan.area_proponente === currentUser.gabinete_id;
+      if (r === 'co_proponente') return plan.co_proponentes?.includes(currentUser.gabinete_id);
+      return false;
+    case 'submeter_dre':
+      return r === 'dapl';
+    case 'qa':
+      return r === 'dapl';
+    default:
+      return false;
+  }
+}
+
+// Filtra planos visíveis para o utilizador atual
+function planosVisiveis() {
+  if (!currentUser) return [];
+  const r = currentUser.role_id;
+  if (['dapl', 'dsaag', 'demo'].includes(r)) return PLANOS;
+  if (r === 'gabinete') {
+    return PLANOS.filter(p => p.area_proponente === currentUser.gabinete_id);
+  }
+  if (r === 'co_proponente') {
+    return PLANOS.filter(p => p.co_proponentes?.includes(currentUser.gabinete_id));
+  }
+  if (r === 'externo') {
+    return PLANOS.filter(p => p.edit_invitations?.length); // simplificação para o mock
+  }
+  return [];
+}
+
 // Helpers
+function getPerfil(id) { return PERFIS.find(p => p.id === id) || null; }
 function getArea(id) { return AREAS_GOVERNATIVAS.find(a => a.id === id) || null; }
 function getEntidade(id) { return ENTIDADES_EXTERNAS.find(e => e.id === id) || null; }
 function getDiploma(id) { return DIPLOMAS.find(d => d.id === id) || null; }

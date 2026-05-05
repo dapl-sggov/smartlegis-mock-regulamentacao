@@ -88,49 +88,67 @@ function renderSection(title, content, opts={}) {
   `;
 }
 
-// ============ Dashboard ============
+// ============ Login ============
+function viewLogin() {
+  return `
+    <div class="sl-login-bg">
+      <div class="sl-login-card">
+        <div class="sl-login-brand">
+          <div class="sl-login-brand-mark"></div>
+          <div>
+            <h1>SmartLegis</h1>
+            <small>Módulo de Regulamentação · DAPL.2026.01</small>
+          </div>
+        </div>
+        <h2>Iniciar sessão</h2>
+        <p class="lead">Selecione um perfil. Cada perfil reflete o papel institucional previsto na especificação — com permissões, vistas e ações coerentes.</p>
+        <div class="sl-login-perfis">
+          ${PERFIS.map(p => `
+            <button class="sl-login-perfil" onclick="login('${p.id}')">
+              <span class="sl-login-avatar" style="background:${p.cor}">${p.avatar}</span>
+              <div class="sl-login-info">
+                <strong>${p.nome}</strong>
+                <span>${p.role}${p.gabinete ? ' · ' + p.gabinete : ''}</span>
+                <em>${p.missao}</em>
+              </div>
+            </button>
+          `).join('')}
+        </div>
+        <div class="sl-login-footer">
+          Mock institucional · DAPL · Secretaria-Geral do Governo
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// ============ Dashboard (simplificado) ============
 function viewDashboard() {
-  const ativos = PLANOS.filter(p => !['publicado','dispensado','cancelado'].includes(p.state)).length;
-  const iaPendente = PLANOS.filter(p => p.state === 'proposto' && p.ai_status === 'concluida').length;
-  const emAprovacao = PLANOS.filter(p => p.state === 'em_aprovacao').length;
-  const semProponente = PLANOS.filter(p => p.aguarda_proponente).length;
+  const visiveis = planosVisiveis();
+  const total = visiveis.length;
+  const emCurso = visiveis.filter(p => !['publicado','dispensado','cancelado'].includes(p.state)).length;
+  const podeCriarPlano = userCan('criar_plano_via_diploma');
 
   return `
     ${renderControlPanel({
       breadcrumb: 'Dashboard',
-      buttons: `<a href="#/plano/novo" class="sl-btn sl-btn--primary">Criar</a>`,
+      buttons: podeCriarPlano ? `<a href="#/plano/novo" class="sl-btn sl-btn--primary">Criar</a>` : '',
     })}
 
-    <div class="sl-card-grid">
-      <div class="sl-card">
-        <div class="sl-card__number">${PLANOS.filter(p=>p.state!=='publicado').length}</div>
-        <h2 class="sl-card__title">MEUS PLANOS</h2>
-        <hr>
-        <a href="#/planos" class="sl-btn sl-btn--secondary">Ver Todos</a>
-      </div>
-      <div class="sl-card">
-        <div class="sl-card__number">${PLANOS.length}</div>
-        <h2 class="sl-card__title">REGULAMENTAÇÃO</h2>
-        <hr>
-        <a href="#/planos" class="sl-btn sl-btn--secondary">Ver Todos</a>
-      </div>
-      <div class="sl-card">
-        <div class="sl-card__number">${iaPendente}</div>
-        <h2 class="sl-card__title" style="font-size:13px">🤖 IA POR VALIDAR</h2>
-        <hr>
-        <a href="#/dsaag" class="sl-btn sl-btn--secondary">Ver Todos</a>
-      </div>
-      <div class="sl-card">
-        <div class="sl-card__number">${emAprovacao}</div>
-        <h2 class="sl-card__title" style="font-size:13px">EM APROVAÇÃO</h2>
-        <hr>
-        <a href="#/planos" class="sl-btn sl-btn--secondary">Ver Todos</a>
-      </div>
-      <div class="sl-card">
-        <div class="sl-card__number">${semProponente}</div>
-        <h2 class="sl-card__title" style="font-size:13px">SEM PROPONENTE</h2>
-        <hr>
-        <a href="#/dsaag" class="sl-btn sl-btn--secondary">Ver Todos</a>
+    <div style="max-width:760px; margin:24px auto; padding:0 24px">
+      <div style="display:grid; grid-template-columns:repeat(2,1fr); gap:16px;">
+        <div class="sl-card" onclick="location.hash='#/planos'" style="cursor:pointer">
+          <div class="sl-card__number">${total}</div>
+          <h2 class="sl-card__title">PLANOS</h2>
+          <hr>
+          <span class="sl-btn sl-btn--secondary">Ver todos</span>
+        </div>
+        <div class="sl-card" onclick="location.hash='#/planos'" style="cursor:pointer">
+          <div class="sl-card__number">${emCurso}</div>
+          <h2 class="sl-card__title" style="font-size:15px;">REGULAMENTAÇÃO EM CURSO</h2>
+          <hr>
+          <span class="sl-btn sl-btn--secondary">Ver em curso</span>
+        </div>
       </div>
     </div>
 
@@ -141,8 +159,9 @@ function viewDashboard() {
             <th>Número</th><th>Título</th><th>IA</th><th>Estado</th><th>Aprovações</th><th>Prazo</th>
           </tr></thead>
           <tbody>
-            ${PLANOS.map(p => {
-              const total = p.approvals?.length || 0;
+            ${visiveis.length === 0 ? `<tr><td colspan="6" style="text-align:center;padding:24px;color:var(--sl-text-muted)"><em>Sem planos visíveis para este perfil.</em></td></tr>` :
+            visiveis.map(p => {
+              const tot = p.approvals?.length || 0;
               const aprovs = p.approvals?.filter(a => a.state === 'aprovado').length || 0;
               return `
                 <tr onclick="location.hash='#/plano/${p.id}'">
@@ -150,7 +169,7 @@ function viewDashboard() {
                   <td>${escapeHtml(p.titulo)}</td>
                   <td>${pillAI(p.ai_status)}</td>
                   <td>${pillEstado(p.state)}</td>
-                  <td>${total ? `${aprovs}/${total}` : '—'}</td>
+                  <td>${tot ? `${aprovs}/${tot}` : '—'}</td>
                   <td>${riskDot(p.risco)} ${fmtDays(diasAteData(p.prazo_data))}</td>
                 </tr>
               `;
@@ -173,7 +192,7 @@ function viewPlanos() {
         <button class="sl-filter-pill">▼ Filtros</button>
         <button class="sl-filter-pill">≡ Agrupar por</button>
       `,
-      pager: `<div class="sl-pager"><span>1-${PLANOS.length} / ${PLANOS.length}</span><button class="sl-pager__nav">‹</button><button class="sl-pager__nav">›</button></div>`,
+      pager: `<div class="sl-pager"><span>1-${planosVisiveis().length} / ${planosVisiveis().length}</span><button class="sl-pager__nav">‹</button><button class="sl-pager__nav">›</button></div>`,
     })}
     <div style="padding:0">
       <div class="sl-table-wrap" style="border-radius:0;border-left:0;border-right:0">
@@ -184,7 +203,8 @@ function viewPlanos() {
             <th>Forma de ato</th><th>Estado</th><th>Aprov.</th><th>Prazo</th>
           </tr></thead>
           <tbody>
-            ${PLANOS.map(p => {
+            ${planosVisiveis().length === 0 ? `<tr><td colspan="10" style="text-align:center;padding:24px;color:var(--sl-text-muted)"><em>Sem planos visíveis para este perfil.</em></td></tr>` :
+            planosVisiveis().map(p => {
               const a = getArea(p.area_proponente);
               const total = p.approvals?.length || 0;
               const aprovs = p.approvals?.filter(x => x.state === 'aprovado').length || 0;
@@ -236,23 +256,30 @@ function viewPlanoDetalhe(planoId, tab='dados') {
     default: tabBody = renderTabDados(p, dipl, area);
   }
 
-  // Botão principal contextual
+  // Botão principal contextual (filtrado por permissão)
+  const podeValidarIA = userCan('validar_ia', p);
+  const podeRedigir = userCan('redigir_documento', p);
+  const podeSubmeterAprovacao = userCan('submeter_aprovacao', p);
+  const podeDevolver = userCan('devolver', p);
+  const podeSubmeterDre = userCan('submeter_dre', p);
+  const podeAtribuir = userCan('gerir_dsaag', p);
   let actionButtons = '';
   if (p.state === 'proposto') {
-    if (p.ai_status === 'concluida' || p.ai_status === 'falhou') {
-      actionButtons = `<button class="sl-btn sl-btn--primary" onclick="validarIA('${p.id}')">Validar IA</button>`;
-    } else {
-      actionButtons = `<button class="sl-btn sl-btn--secondary" onclick="rerunIA('${p.id}')">Re-correr IA</button>`;
+    if (p.aguarda_proponente && podeAtribuir) {
+      actionButtons += `<button class="sl-btn sl-btn--primary" onclick="atribuirProponente('${p.id}')">Atribuir Proponente</button>`;
     }
-    if (p.aguarda_proponente) {
-      actionButtons = `<button class="sl-btn sl-btn--primary" onclick="atribuirProponente('${p.id}')">Atribuir Proponente</button>` + actionButtons;
+    if (podeValidarIA) {
+      if (p.ai_status === 'concluida' || p.ai_status === 'falhou') {
+        actionButtons += `<button class="sl-btn sl-btn--primary" onclick="validarIA('${p.id}')">Validar IA</button>`;
+      }
+      actionButtons += `<button class="sl-btn sl-btn--secondary" onclick="rerunIA('${p.id}')">Re-correr IA</button>`;
     }
-  } else if (p.state === 'em_redacao') {
+  } else if (p.state === 'em_redacao' && podeSubmeterAprovacao) {
     actionButtons = `<button class="sl-btn sl-btn--primary" onclick="submeterAprovacao('${p.id}')">Submeter à Aprovação</button>`;
-  } else if (p.state === 'em_aprovacao') {
+  } else if (p.state === 'em_aprovacao' && podeDevolver) {
     actionButtons = `<button class="sl-btn sl-btn--secondary" onclick="devolverRedacao('${p.id}')">Devolver</button>`;
-  } else if (p.state === 'aprovado') {
-    actionButtons = `<button class="sl-btn sl-btn--primary" onclick="enviarPublicacao('${p.id}')">Enviar para Publicação</button>`;
+  } else if (p.state === 'aprovado' && podeSubmeterDre) {
+    actionButtons = `<button class="sl-btn sl-btn--primary" onclick="enviarPublicacao('${p.id}')">Enviar para Publicação (DAPL)</button>`;
   }
 
   // Banner contextual
@@ -330,6 +357,17 @@ function viewPlanoDetalhe(planoId, tab='dados') {
 }
 
 function renderTabDados(p, dipl, area) {
+  // Edição inline dos campos pré-preenchidos pela IA (apenas em estado proposto, com permissão)
+  const editavel = p.state === 'proposto' && userCan('validar_ia', p);
+  const editHint = editavel ? `<span class="sl-ia-edit-hint">(editável até validação)</span>` : '';
+
+  // Helper para mostrar input ou valor read-only
+  const inputOrValue = (val, field, type='text', isLong=false) => {
+    if (!editavel) return `<div class="sl-form__value">${escapeHtml(val)}</div>`;
+    if (isLong) return `<textarea class="sl-form__textarea" onchange="updatePlanField('${p.id}','${field}',this.value)">${escapeHtml(val)}</textarea>`;
+    return `<input type="${type}" class="sl-form__input" value="${escapeHtml(String(val))}" onchange="updatePlanField('${p.id}','${field}',this.value)">`;
+  };
+
   return `
     <div class="sl-form__row">
       <div class="sl-form__field">
@@ -338,7 +376,7 @@ function renderTabDados(p, dipl, area) {
       </div>
       <div class="sl-form__field">
         <label class="sl-form__label sl-form__label--required">Título</label>
-        <div class="sl-form__value">${escapeHtml(p.titulo)}</div>
+        ${inputOrValue(p.titulo, 'titulo')}
       </div>
     </div>
     <div class="sl-form__row">
@@ -353,12 +391,16 @@ function renderTabDados(p, dipl, area) {
     </div>
     <div class="sl-form__row">
       <div class="sl-form__field">
-        <label class="sl-form__label sl-form__label--required">Forma de Ato Prevista</label>
-        <div class="sl-form__value">${getFormaAtoLabel(p.forma_ato_prevista)}${p.forma_ato_origem_ia && p.ai_status !== 'validada' ? badgeIA() : ''}</div>
+        <label class="sl-form__label sl-form__label--required">Forma de Ato Prevista${p.forma_ato_origem_ia && p.ai_status !== 'validada' ? badgeIA() : ''}${editHint}</label>
+        ${editavel ? `
+          <select class="sl-form__select" onchange="updatePlanField('${p.id}','forma_ato_prevista',this.value)">
+            ${FORMAS_ATO.map(([v,l]) => `<option value="${v}" ${p.forma_ato_prevista === v ? 'selected' : ''}>${l}</option>`).join('')}
+          </select>
+        ` : `<div class="sl-form__value">${getFormaAtoLabel(p.forma_ato_prevista)}</div>`}
       </div>
       <div class="sl-form__field">
-        <label class="sl-form__label">Prazo Legal</label>
-        <div class="sl-form__value">${p.prazo_legal_dias} dias${p.prazo_origem_ia && p.ai_status !== 'validada' ? badgeIA() : ''}</div>
+        <label class="sl-form__label">Prazo Legal (dias)${p.prazo_origem_ia && p.ai_status !== 'validada' ? badgeIA() : ''}${editHint}</label>
+        ${editavel ? `<input type="number" class="sl-form__input" value="${p.prazo_legal_dias}" min="1" max="730" onchange="updatePlanField('${p.id}','prazo_legal_dias',parseInt(this.value)||60)">` : `<div class="sl-form__value">${p.prazo_legal_dias} dias</div>`}
       </div>
     </div>
     <div class="sl-form__row">
@@ -374,11 +416,16 @@ function renderTabDados(p, dipl, area) {
     <div class="sl-form__row">
       <div class="sl-form__field">
         <label class="sl-form__label">Área Governativa Proponente</label>
-        <div class="sl-form__value">${area ? `<strong>${area.sigla}</strong> · ${area.nome}` : '<em class="sl-text-muted">não atribuída</em>'}</div>
+        ${editavel ? `
+          <select class="sl-form__select" onchange="updatePlanField('${p.id}','area_proponente',this.value)">
+            <option value="">— escolha —</option>
+            ${AREAS_GOVERNATIVAS.map(a => `<option value="${a.id}" ${p.area_proponente === a.id ? 'selected' : ''}>${a.sigla} · ${a.nome}</option>`).join('')}
+          </select>
+        ` : `<div class="sl-form__value">${area ? `<strong>${area.sigla}</strong> · ${area.nome}` : '<em class="sl-text-muted">não atribuída</em>'}</div>`}
       </div>
       <div class="sl-form__field">
         <label class="sl-form__label">Adjunto Responsável</label>
-        <div class="sl-form__value">${p.adjunto_responsavel || '—'}</div>
+        ${inputOrValue(p.adjunto_responsavel || '', 'adjunto_responsavel')}
       </div>
     </div>
     <div class="sl-form__row">
@@ -389,8 +436,8 @@ function renderTabDados(p, dipl, area) {
     </div>
     <div class="sl-form__row">
       <div class="sl-form__field sl-form__field--full">
-        <label class="sl-form__label sl-form__label--required">Objeto da Regulamentação${p.objeto_origem_ia && p.ai_status !== 'validada' ? badgeIA() : ''}</label>
-        <div class="sl-form__value" style="white-space:normal">${escapeHtml(p.objeto)}</div>
+        <label class="sl-form__label sl-form__label--required">Objeto da Regulamentação${p.objeto_origem_ia && p.ai_status !== 'validada' ? badgeIA() : ''}${editHint}</label>
+        ${inputOrValue(p.objeto || '', 'objeto', 'text', true)}
       </div>
     </div>
     <div class="sl-form__row">

@@ -1,15 +1,67 @@
-// SmartLegis · Módulo de Regulamentação · Mock app v0.2 (routing + ações)
+// SmartLegis · Módulo de Regulamentação · Mock app v0.5 (auth + permissões + edição IA)
 
 const app = {
   current: null,
   rerender() { router(); },
 };
 
+// ============ Auth ============
+function loadAuth() {
+  const stored = sessionStorage.getItem('sl_user');
+  if (stored) {
+    try { currentUser = JSON.parse(stored); }
+    catch (e) { currentUser = null; }
+  }
+}
+function login(perfilId) {
+  const p = getPerfil(perfilId);
+  if (!p) return;
+  currentUser = p;
+  sessionStorage.setItem('sl_user', JSON.stringify(p));
+  if (location.hash === '#/dashboard') router();
+  else location.hash = '#/dashboard';
+}
+function logout() {
+  currentUser = null;
+  sessionStorage.removeItem('sl_user');
+  router();
+}
+function refreshUserPill() {
+  const avatar = document.getElementById('userAvatar');
+  const name = document.getElementById('userName');
+  const role = document.getElementById('userMenuRole');
+  const fullName = document.getElementById('userMenuName');
+  if (!avatar) return;
+  if (currentUser) {
+    avatar.textContent = currentUser.avatar;
+    avatar.style.background = currentUser.cor;
+    name.textContent = currentUser.nome + ' ▼';
+    if (role) role.textContent = currentUser.role + (currentUser.gabinete ? ' · ' + currentUser.gabinete : '');
+    if (fullName) fullName.textContent = currentUser.nome;
+  }
+}
+function toggleUserMenu(e) {
+  if (e) e.stopPropagation();
+  document.getElementById('userMenu').classList.toggle('is-open');
+}
+
 // ============ Routing ============
 function router() {
+  loadAuth();
+  const main = document.getElementById('main');
+  const topbar = document.getElementById('topbar');
+
+  // Route guard: sem auth → login screen
+  if (!currentUser) {
+    if (topbar) topbar.style.display = 'none';
+    main.innerHTML = viewLogin();
+    return;
+  }
+  if (topbar) topbar.style.display = '';
+  refreshUserPill();
+
   const hash = location.hash.replace(/^#\//, '') || 'dashboard';
   const parts = hash.split('/').filter(Boolean);
-  const main = document.getElementById('main');
   const breadcrumb = document.getElementById('breadcrumb');
 
   const route = parts[0];
@@ -70,7 +122,13 @@ window.addEventListener('DOMContentLoaded', () => {
       document.getElementById('sidebar').classList.toggle('is-open');
     });
   }
-  document.getElementById('alertsBtn').addEventListener('click', () => location.hash = '#/dsaag');
+  const ab = document.getElementById('alertsBtn');
+  if (ab) ab.addEventListener('click', () => location.hash = '#/dsaag');
+  // Fecha user menu ao clicar fora
+  document.addEventListener('click', () => {
+    const m = document.getElementById('userMenu');
+    if (m) m.classList.remove('is-open');
+  });
 });
 
 function refreshAlertCount() {
@@ -85,6 +143,24 @@ function toast(msg, type='') {
   t.textContent = msg;
   t.className = 'sl-toast is-open' + (type ? ` sl-toast--${type}` : '');
   setTimeout(() => { t.className = 'sl-toast'; }, 2400);
+}
+
+// Atualiza um campo de um plano (usado nos inputs editáveis da Análise IA)
+function updatePlanField(planId, field, value) {
+  const p = getPlano(planId);
+  if (!p) return;
+  p[field] = value;
+  // Limpa flag de origem IA quando humano edita
+  const flagMap = {
+    objeto: 'objeto_origem_ia',
+    forma_ato_prevista: 'forma_ato_origem_ia',
+    prazo_legal_dias: 'prazo_origem_ia',
+  };
+  if (flagMap[field]) p[flagMap[field]] = false;
+  // Recalcula prazo limite se mudou prazo legal
+  if (field === 'prazo_legal_dias' && p.data_publicacao_habilitante) {
+    p.prazo_data = new Date(new Date(p.data_publicacao_habilitante).getTime() + value * 86400000).toISOString().slice(0,10);
+  }
 }
 
 // Wizard navigation (3-step SmartLegis)

@@ -8,7 +8,7 @@
 </head>
 <body>
   <!-- ============ Topbar ============ -->
-  <header class="sl-navbar">
+  <header class="sl-navbar" id="topbar">
     <div class="sl-navbar__logo" id="logoToggle" title="Aplicações">
       <div class="sl-navbar__logo-mark"></div>
       <span class="sl-navbar__brand">SMARTLEGIS</span>
@@ -26,9 +26,15 @@
       <button class="sl-navbar__icon-btn" title="Mensagens">
         💬<span class="sl-navbar__badge">12</span>
       </button>
-      <div class="sl-navbar__user">
-        <span class="sl-navbar__user-avatar">UD</span>
-        <span>Utilizador DAPL ▼</span>
+      <div class="sl-navbar__user" id="userPill" onclick="toggleUserMenu(event)" style="cursor:pointer">
+        <span class="sl-navbar__user-avatar" id="userAvatar" style="background:var(--sl-primary)">UD</span>
+        <span id="userName">Utilizador ▼</span>
+      </div>
+      <div class="sl-user-menu" id="userMenu">
+        <div class="sl-user-menu__role" id="userMenuRole"></div>
+        <div class="sl-user-menu__name" id="userMenuName"></div>
+        <div class="sl-user-menu__divider"></div>
+        <button class="sl-user-menu__item" onclick="logout()">⏻ Sair / Trocar de perfil</button>
       </div>
     </div>
 
